@@ -1,2 +1,0 @@
-# Huffman
-Trabalho de Grafos

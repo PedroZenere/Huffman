@@ -107,13 +107,18 @@ void imprimir (TLista *pLista) {
 
 void soma(TLista *pLista){
 	
-	float sum
+	float sum;
 		
-	TCelula *pAux = pLista->pPrimeiro;
+	TCelula *pAux, *pAux2;
+	pAux = pLista->pPrimeiro;
+	pAux2 = pAux->pProx;
 	
-	sum = 
+	sum = pAux->item.frequencia + pAux2->item.frequencia;
 	
-		
+	printf("%f\n", sum);
+	
+	InsereArvore(sum, pAux, pAux2);
+	
 }
 
 int main(int argc, char **argv)
@@ -134,6 +139,7 @@ int main(int argc, char **argv)
 	
 	selectionSort(item, i);
 	insereLista(&lista, item, i);
+	soma(&lista);
 	
 	/*
 	for(i=0;i<5;i++){
@@ -141,7 +147,7 @@ int main(int argc, char **argv)
 	}
 	*/
 	
-	imprimir(&lista);
+	//imprimir(&lista);
 	return 0;
 }
 
