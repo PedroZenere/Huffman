@@ -14,7 +14,7 @@ typedef struct TNo {
 typedef struct celula {
 	struct celula *pProx;
 	struct celula *pAnt;
-	TItem item;
+	TNo NoCelula;
 } TCelula;
 
 typedef struct {
@@ -25,7 +25,6 @@ typedef struct {
 void iniciarLista (TLista *pLista);
 int isVazia (TLista *pLista);
 int inserirFim (TLista *pLista, TItem x);
-int inserirAposE (TLista *pLista, TItem x, int e);
 int removerPrimeiro (TLista *pLista, TItem *pX);
 int removerUltimo (TLista *pLista, TItem *pX);
 void imprimir (TLista *pLista, int inverso);
@@ -34,9 +33,12 @@ TCelula* busca (TLista *pLista, int chave);
 //Funçoes Arvores:
 
 //Funçoes Huffman:
-void InserirArvore(TNo *novo, int primeiro, int segundo);
+void InserirArvore(TLista *pLista, TNo *novo);
+void Soma(TLista *pLista);
+
 
 //----------------------------------//
+
 void iniciarLista (TLista *pLista) {
 	pLista->pPrimeiro = NULL;
 	pLista->pUltimo = NULL;
@@ -108,6 +110,7 @@ TCelula* busca (TLista *pLista, int chave){
 	
 }
 
+//Arvore
 TNo* criarNo(TItem x) {
 	TNo* pAux = (TNo*) malloc(sizeof(TNo));
 	pAux->item = x;
@@ -146,8 +149,29 @@ void selectionSort (TItem *v, int n) {
 	}
 }
 
-void InserirArvore(TNo *novo, int primeiro, int segundo){
-//TODO
+void InserirArvore(TLista plista, TNo *novo){
+	TNo *removido;
+	removerPrimeiro(pLista, removido);
+	printf("Item removido");
+	removerPrimeiro(pLista, removido);
+	printf("Item removido");
+	InsereOrdenado(pLista, novo);
+}
+
+void soma(TLista *pLista){
+	
+	float sum;
+		
+	TCelula *pAux, *pAux2;
+	pAux = pLista->pPrimeiro;
+	pAux2 = pAux->pProx;
+	
+	sum = pAux->item.frequencia + pAux2->item.frequencia;
+	
+	printf("%f\n", sum);
+	
+	InsereArvore(sum, pAux, pAux2);
+	
 }
 
 int main(int argc, char **argv)
