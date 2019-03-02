@@ -12,6 +12,8 @@ typedef struct No {
 	struct No *pEsq, *pDir;
 } TNo;
 
+//teste
+
 TNo* criarNo(TItem x) {
 	TNo* pAux = (TNo*) malloc(sizeof(TNo));
 	pAux->item = x;
