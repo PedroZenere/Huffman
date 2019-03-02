@@ -35,6 +35,9 @@ TCelula* busca (TLista *pLista, int chave);
 //Funçoes Huffman:
 void InserirArvore(TNo *novo, int primeiro, int segundo);
 void Soma(TLista *pLista);
+void ImprimirArvore(TNo *Raiz);
+void ImprimirTabela(TNo *Raiz);
+void TaxaCompressao(TNo *Raiz, int bits, int quantidade);
 
 
 //----------------------------------//
@@ -48,7 +51,7 @@ int isVazia (TLista *pLista) {
 	return pLista->pPrimeiro == NULL;
 }
 
-int inserirFim (TLista *pLista, TItem x) {
+int inserirOrdenado (TLista *pLista, TNo *x) {
 	TCelula *novo = (TCelula *) malloc (sizeof (TCelula));
 	novo->item = x;
 	novo->pProx = NULL;
@@ -56,7 +59,21 @@ int inserirFim (TLista *pLista, TItem x) {
 	
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
-	} else {
+	} 
+	else if (x->item.frequencia < pLista->pPrimeiro->item.frequencia){
+		TCelula *pAux;
+		pAux = pLista->pPrimeiro;
+		novo->pProx = pAux;
+		pLista->pPrimeiro = novo;
+	}
+	else if (x->item.frequencia > pLista->pPrimeiro->item.frequencia){
+		TCelula *pAux = pLista->pPrimeiro;
+		while(pAux != NULL && x->item.frequencia < pAux->item.frequencia){
+			pAux = pAux->pProx;
+		}
+		pAux
+		
+	}
 		pLista->pUltimo->pProx = novo;
 		novo->pAnt = pLista->pUltimo;
 	}
@@ -171,16 +188,19 @@ void soma(TLista *pLista){
 
 int main(int argc, char **argv)
 {
-	TItem item[5];
-	int i;
+	TLista lista;
+	TItem item;
+	int i, j;
 	
+	iniciarLista(&lista);
+	
+	printf("Insira quantos elementos deseja:\n");
+	scanf("%d", &j);
 	printf("Preencha com os simbolos e a frequencia:\n");
-	for(i=0;i<5;i++){
+	for(i=0;i<j;i++){
 		scanf("\n%c", &item[i].simbolo);
-		//printf("%c\n", item[i].simbolo);
 		scanf("%f", &item[i].frequencia);
-		//printf("%f\n", item[i].frequencia);
-		//printf("%d\n", i);
+		inserirFim(&lista, item[i]);
 	}
 	
 	selectionSort(item, i);
