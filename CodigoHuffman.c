@@ -36,6 +36,7 @@ TCelula* busca (TLista *pLista, int chave);
 //Funçoes Huffman:
 void InserirArvore(TNo *novo, int primeiro, int segundo);
 
+//----------------------------------//
 void iniciarLista (TLista *pLista) {
 	pLista->pPrimeiro = NULL;
 	pLista->pUltimo = NULL;
@@ -145,7 +146,9 @@ void selectionSort (TItem *v, int n) {
 	}
 }
 
-
+void InserirArvore(TNo *novo, int primeiro, int segundo){
+//TODO
+}
 
 int main(int argc, char **argv)
 {
