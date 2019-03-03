@@ -14,7 +14,8 @@ typedef struct TNo {
 typedef struct celula {
 	struct celula *pProx;
 	struct celula *pAnt;
-	TItem item;
+	TNo NoCelula;
+
 } TCelula;
 
 typedef struct {
@@ -33,12 +34,11 @@ TCelula* busca (TLista *pLista, int chave);
 //Funçoes Arvores:
 
 //Funçoes Huffman:
-void InserirArvore(TNo *novo, int primeiro, int segundo);
+void InserirArvore(TLista *pLista, TNo *novo);
 void Soma(TLista *pLista);
 void ImprimirArvore(TNo *Raiz);
 void ImprimirTabela(TNo *Raiz);
 void TaxaCompressao(TNo *Raiz, int bits, int quantidade);
-
 
 //----------------------------------//
 
@@ -51,6 +51,7 @@ int isVazia (TLista *pLista) {
 	return pLista->pPrimeiro == NULL;
 }
 
+
 int inserirOrdenado (TLista *pLista, TNo *x) {
 	TCelula *novo = (TCelula *) malloc (sizeof (TCelula));
 	novo->item = x;
@@ -59,21 +60,20 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
-	} 
-	else if (x->item.frequencia < pLista->pPrimeiro->item.frequencia){
-		TCelula *pAux;
-		pAux = pLista->pPrimeiro;
-		novo->pProx = pAux;
-		pLista->pPrimeiro = novo;
-	}
-	else if (x->item.frequencia > pLista->pPrimeiro->item.frequencia){
-		TCelula *pAux = pLista->pPrimeiro;
-		while(pAux != NULL && x->item.frequencia < pAux->item.frequencia){
-			pAux = pAux->pProx;
-		}
-		pAux
-		
-	}
+
+	} else if (x->item.frequencia < pLista->pPrimeiro->item.frequencia){
+			TCelula *pAux;
+			pAux = pLista->pPrimeiro;
+			novo->pProx = pAux;
+			pLista->pPrimeiro = novo;
+		} 
+		else if (x->item.frequencia > pLista->pPrimeiro->item.frequencia){
+				TCelula *pAux = pLista->pPrimeiro;
+				while(pAux != NULL && x->item.frequencia < pAux->item.frequencia){
+					pAux = pAux->pProx;
+				}
+				pAux
+			}
 		pLista->pUltimo->pProx = novo;
 		novo->pAnt = pLista->pUltimo;
 	}
@@ -166,8 +166,14 @@ void selectionSort (TItem *v, int n) {
 	}
 }
 
-void InserirArvore(TNo *novo, int primeiro, int segundo){
-//TODO
+
+void InserirArvore(TLista plista, TNo *novo){
+	TNo *removido;
+	removerPrimeiro(pLista, removido);
+	printf("Item removido");
+	removerPrimeiro(pLista, removido);
+	printf("Item removido");
+	InsereOrdenado(pLista, novo);
 }
 
 void soma(TLista *pLista){
