@@ -34,11 +34,12 @@ TCelula* buscaLista (TLista *pLista, float frequencia);
 //Funçoes Arvores:
 TNo* criarNo(TItem x);
 TNo* inserirNo(TNo* pR, TItem x);
-void selectionSort (TItem *v, int n);
+void preOrdem(TNo *p);
+void emOrdem(TNo*p);
 
 //Funçoes Huffman:
 void MontaArvore(TLista *pLista);
-void InserirArvore(TLista *pLista, TNo *novo);
+void Remove2Primeiros(TLista *pLista, TNo *novo);
 void ImprimirArvore(TNo *Raiz);
 void ImprimirTabela(TNo *Raiz);
 void TaxaCompressao(TNo *Raiz, int bits, int quantidade);
@@ -194,11 +195,28 @@ void MontaArvore(TLista *pLista){ //Antiga funcao Soma
 	novo->pEsq = pAux->NoCelula;
 	novo->pDir = pAux2->NoCelula;
 	
-	InserirArvore(pLista, novo);
+	Remove2Primeiros(pLista, novo);
+}
+
+void preOrdem(TNo *p) {
+	if (p == NULL) 
+		return;
+	printf("%c\n", p->item.simbolo);
+	preOrdem(p->pEsq);
+	preOrdem(p->pDir);
+}
+
+void emOrdem(TNo*p) {
+	if (p == NULL) 
+		return;
+	preOrdem(p->pEsq);
+	printf("%c\n", p->item.simbolo);
+	preOrdem(p->pDir);
 }
 
 void ImprimirArvore(TNo *Raiz){
 //TODO
+//Poderiamos chamar a Função em Ordem que percorre a arvore buscando sempre primeiro a Raiz
 }
 
 void ImprimirTabela(TNo *Raiz){
