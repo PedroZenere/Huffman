@@ -29,7 +29,7 @@ int inserirFim (TLista *pLista, TItem x);
 int removerPrimeiro (TLista *pLista, TItem *pX);
 int removerUltimo (TLista *pLista, TItem *pX);
 void imprimir (TLista *pLista, int inverso);
-TCelula* busca (TLista *pLista, int chave);
+TCelula* buscaLista (TLista *pLista, int chave);
 
 //Funçoes Arvores:
 TNo* criarNo(TItem x);
@@ -37,8 +37,8 @@ TNo* inserirNo(TNo* pR, TItem x);
 void selectionSort (TItem *v, int n);
 
 //Funçoes Huffman:
+void MontaArvore(TLista *pLista);
 void InserirArvore(TLista *pLista, TNo *novo);
-void Soma(TLista *pLista);
 void ImprimirArvore(TNo *Raiz);
 void ImprimirTabela(TNo *Raiz);
 void TaxaCompressao(TNo *Raiz, int bits, int quantidade);
@@ -117,7 +117,7 @@ void imprimir (TLista *pLista, int inverso) {
 	printf("\n");
 }
 
-TCelula* busca (TLista *pLista, int chave){
+TCelula* buscaLista (TLista *pLista, int chave){
 	TCelula *pAux = pLista->pPrimeiro;
 	while (pAux != NULL) {
 		if (pAux->item.chave == chave){
@@ -129,7 +129,8 @@ TCelula* busca (TLista *pLista, int chave){
 	
 }
 
-//Arvore
+//----------------------------------//
+
 TNo* criarNo(TItem x) {
 	TNo* pAux = (TNo*) malloc(sizeof(TNo));
 	pAux->item = x;
@@ -148,6 +149,7 @@ TNo* inserirNo(TNo* pR, TItem x) {
 	return pR;
 }
 
+//----------------------------------//
 
 //AINDA UTIL ESSA FUNCAO?(selectionSort) SE NAO, PODE APAGAR, E PUSH.
 void selectionSort (TItem *v, int n) {
@@ -170,7 +172,6 @@ void selectionSort (TItem *v, int n) {
 	}
 }
 
-
 void InserirArvore(TLista plista, TNo *novo){
 	TNo *removido;
 	removerPrimeiro(pLista, removido);
@@ -180,7 +181,7 @@ void InserirArvore(TLista plista, TNo *novo){
 	InsereOrdenado(pLista, novo);
 }
 
-void soma(TLista *pLista){
+void MontaArvore(TLista *pLista){ //Antiga funcao Soma
 	
 	float sum;
 		
@@ -193,7 +194,18 @@ void soma(TLista *pLista){
 	printf("%f\n", sum);
 	
 	InsereArvore(sum, pAux, pAux2);
-	
+}
+
+void ImprimirArvore(TNo *Raiz){
+//TODO
+}
+
+void ImprimirTabela(TNo *Raiz){
+//TODO
+}
+
+void TaxaCompressao(TNo *Raiz, int bits, int quantidade){
+//TODO
 }
 
 int main(int argc, char **argv)
