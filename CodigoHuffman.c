@@ -41,7 +41,7 @@ void emOrdem(TNo*p);
 void MontaArvore(TLista *pLista);
 void Remove2Primeiros(TLista *pLista, TNo *novo);
 void ImprimirArvore(TNo *Raiz);
-void ImprimirTabela(TNo *Raiz);
+void ImprimirTabela(TNo *Raiz, int totalOcorrencia);
 void TaxaCompressao(TNo *Raiz, int bits, int quantidade);
 
 //----------------------------------//
@@ -68,7 +68,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	achou = 0;
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
-		pLista->pUltimo = novo; //Faltou inicilizar o primeiro elemento como sendo primeiro e o ultimo da lista
+		pLista->pUltimo = novo;
 		
 	} else {
 		while(pCelula != NULL && achou == 0) {
@@ -78,23 +78,23 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 					novo->pProx = pCelula;
 					pCelula->pAnt = novo;
 					pLista->pPrimeiro = novo;
-					achou = 1;
+					
 				} else if(pCelula == pLista->pUltimo) { //Insere no Fim
 					novo->pAnt = pCelula;
 					pCelula->pProx = novo;
 					pLista->pUltimo = novo;
-					achou = 1;
+					
 				} else {
 					pCelula->pAnt->pProx = novo; 
 					novo->pAnt = pCelula->pAnt;
 					pCelula->pAnt = novo;
 					novo->pProx = pCelula;
-					achou = 1;
+					
 				}
+				achou = 1;
 			}
 			pCelula = pCelula->pProx;
 		}
-		
 	}
 	
 	return 1;
@@ -219,8 +219,35 @@ void ImprimirArvore(TNo *Raiz){
 //Poderiamos chamar a Função em Ordem que percorre a arvore buscando sempre primeiro a Raiz
 }
 
-void ImprimirTabela(TNo *Raiz){
-//TODO
+void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia){
+	if(p == NULL)
+		return;
+	
+	char simbolo = p->item.simbolo;
+	int ocorrencia = p->item.frequencia * totalOcorrencia;
+	int bitsHuffman = ocorrencia * nivel;
+	
+	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
+		printf("\t| %c | %d | %d | %d |\n", simbolo, ocorrencia, binario, bitsHuffman);
+		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia);
+		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia);
+	} else {
+		return;
+	}
+	
+}
+
+void ImprimirTabela(TNo *Raiz, int totalOcorrencia){
+	int binario = 0;
+	int nivel = 0;
+	
+	printf("Tabela: \n");
+	printf("\t+----------+----------------+---------+--------------+\n");
+	printf("\t| Caracter | Nº Ocorrências | Binario | Bits Huffman |\n");
+	printf("\t+----------+----------------+---------+--------------+\n");
+	PercorreArvore(Raiz, binario, nivel, totalOcorrencia);
+	printf("\t+----------+----------------+---------+--------------+\n");
+
 }
 
 void TaxaCompressao(TNo *Raiz, int bits, int quantidade){
