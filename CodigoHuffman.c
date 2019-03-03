@@ -55,6 +55,7 @@ int isVazia (TLista *pLista) {
 }
 
 int inserirOrdenado (TLista *pLista, TNo *x) {
+	int achou;
 	TCelula *novo = (TCelula *) malloc (sizeof (TCelula));
 	novo->NoCelula = x;
 	novo->pProx = NULL;
@@ -63,28 +64,31 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	TCelula *pCelula; //Variavel auxiliar para o codigo ficar mais legivel
 	TNo *pNo;		  //Variavel auxiliar para o codigo ficar mais legivel
 	pCelula = pLista->pPrimeiro;
-	
+	achou = 0;
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
-		pLista->pUltimo = novo; //Pedro - Faltou inicilizar o primeiro elemento como sendo primeiro e o ultimo da lista
+		pLista->pUltimo = novo; //Faltou inicilizar o primeiro elemento como sendo primeiro e o ultimo da lista
 		
 	} else {
-		while(pCelula != NULL) {
+		while(pCelula != NULL && achou == 0) {
 			pNo = pCelula->NoCelula; //pNo recebe o No da Celula sendo visitada a cada iteração
 			if(x->item.frequencia < pNo->item.frequencia) {
 				if(pCelula == pLista->pPrimeiro) { //Insere no Inicio
 					novo->pProx = pCelula;
 					pCelula->pAnt = novo;
 					pLista->pPrimeiro = novo;
+					achou = 1;
 				} else if(pCelula == pLista->pUltimo) { //Insere no Fim
 					novo->pAnt = pCelula;
 					pCelula->pProx = novo;
 					pLista->pUltimo = novo;
+					achou = 1;
 				} else {
 					pCelula->pAnt->pProx = novo; 
 					novo->pAnt = pCelula->pAnt;
 					pCelula->pAnt = novo;
 					novo->pProx = pCelula;
+					achou = 1;
 				}
 			}
 			pCelula = pCelula->pProx;
@@ -164,8 +168,6 @@ TNo* inserirNo(TNo* pR, TItem x) {
 
 //----------------------------------//
 
-//AINDA UTIL ESSA FUNCAO?(selectionSort) SE NAO, PODE APAGAR, E PUSH.
-
 void Remove2Primeiros(TLista *pLista, TNo *novo){
 	TNo *removido = NULL;
 	removerPrimeiro(pLista, removido);
@@ -208,36 +210,27 @@ void TaxaCompressao(TNo *Raiz, int bits, int quantidade){
 }
 
 int main(int argc, char **argv)
-{
-	/*
+{	
+	//Criando a referencia da lista, e o Tno Node
 	TLista lista;
 	TItem item;
-	int i, j;
+	int quantidade, i;
 	
+	//iniciando a lista
 	iniciarLista(&lista);
-	
-	printf("Insira quantos elementos deseja:\n");
-	scanf("%d", &j);
-	printf("Preencha com os simbolos e a frequencia:\n");
-	
-																Nem tem mais vetor... Pode apagar e push.
-	
-	for(i=0;i<j;i++){
-		scanf("\n%c", &item[i].simbolo);
-		scanf("%f", &item[i].frequencia);
-		inserirFim(&lista, item[i]);
+	printf("Insira a quantidade de simbolos:\n");
+	scanf("%d", &quantidade);
+	for(i=0;i<quantidade;i++){
+		scanf("\n%c", &item.simbolo);
+		scanf("%f", &item.frequencia);
+		//Lê um item, chama a função CriaNo, a mesma cria o Nó e manda para a função inserirOrdenado
+		inserirOrdenado(&lista, criarNo(item));
 	}
-	
-	selectionSort(item, i);
-	
-	for(i=0;i<5;i++){
-		printf("%c %f ", item[i].simbolo, item[i].frequencia);
-	}
-	*/
+
 	return 0;
 }
 
 /*
+TESTE:
 a 48 c 9 g 12 k 4 p 17
-
 */
