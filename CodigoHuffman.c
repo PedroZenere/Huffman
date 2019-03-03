@@ -32,6 +32,9 @@ void imprimir (TLista *pLista, int inverso);
 TCelula* busca (TLista *pLista, int chave);
 
 //Funçoes Arvores:
+TNo* criarNo(TItem x);
+TNo* inserirNo(TNo* pR, TItem x);
+void selectionSort (TItem *v, int n);
 
 //Funçoes Huffman:
 void InserirArvore(TLista *pLista, TNo *novo);
@@ -50,7 +53,6 @@ void iniciarLista (TLista *pLista) {
 int isVazia (TLista *pLista) {
 	return pLista->pPrimeiro == NULL;
 }
-
 
 int inserirOrdenado (TLista *pLista, TNo *x) {
 	TCelula *novo = (TCelula *) malloc (sizeof (TCelula));
@@ -146,6 +148,8 @@ TNo* inserirNo(TNo* pR, TItem x) {
 	return pR;
 }
 
+
+//AINDA UTIL ESSA FUNCAO?(selectionSort) SE NAO, PODE APAGAR, E PUSH.
 void selectionSort (TItem *v, int n) {
 	int i, j, min;
 	TItem aux;
