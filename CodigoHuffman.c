@@ -26,7 +26,7 @@ typedef struct {
 void iniciarLista (TLista *pLista);
 int isVazia (TLista *pLista);
 int inserirFim (TLista *pLista, TItem x);
-int removerPrimeiro (TLista *pLista, TNo *pX);
+int removerPrimeiro (TLista *pLista);
 int removerUltimo (TLista *pLista, TItem *pX);
 void imprimir (TLista *pLista, int inverso);
 TCelula* buscaLista (TLista *pLista, float frequencia);
@@ -100,13 +100,12 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	return 1;
 }
 
-int removerPrimeiro (TLista *pLista, TNo *pX) {
+int removerPrimeiro (TLista *pLista) {
 	if (isVazia (pLista)) {
 		return 0;
 	}
 	TCelula *pAux;
 	pAux = pLista->pPrimeiro;
-	pX = pAux->NoCelula;
 	pLista->pPrimeiro = pAux->pProx;
 	pLista->pPrimeiro->pAnt = NULL;
 	free (pAux);
@@ -167,41 +166,6 @@ TNo* inserirNo(TNo* pR, TItem x) {
 	return pR;
 }
 
-//----------------------------------//
-
-void ReorganizaLista(TLista *pLista, TNo *novo){ //Antigo Remove2Primeiros
-	TNo *removido = NULL;
-	removerPrimeiro(pLista, removido);
-	printf("Item removido (%c , %2.f)\n", removido->item.simbolo, removido->item.frequencia);
-	removerPrimeiro(pLista, removido);
-	printf("Item removido (%c , %2.f)\n", removido->item.simbolo, removido->item.frequencia);
-	inserirOrdenado(pLista, novo);
-}
-
-TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
-	
-	TCelula *pAux, *pAux2;
-	TNo *novo = (TNo*) malloc(sizeof(TNo));
-	float somaFrequencia;
-	
-	pAux = pLista->pPrimeiro;
-	pAux2 = pAux->pProx;
-	
-	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
-	
-		somaFrequencia = pAux->NoCelula->item.frequencia + pAux2->NoCelula->item.frequencia;
-		
-		printf("%f\n", somaFrequencia);
-		
-		novo->item.frequencia = somaFrequencia;
-		novo->pEsq = pAux->NoCelula;
-		novo->pDir = pAux2->NoCelula;
-		
-		ReorganizaLista(pLista, novo);
-	}
-	return pLista->pPrimeiro->NoCelula;
-}
-
 void preOrdem(TNo *p) {
 	if (p == NULL) 
 		return;
@@ -216,6 +180,40 @@ void emOrdem(TNo*p) {
 	preOrdem(p->pEsq);
 	printf("%c\n", p->item.simbolo);
 	preOrdem(p->pDir);
+}
+
+//----------------------------------//
+
+void ReorganizaLista(TLista *pLista, TNo *novo){ //Antigo Remove2Primeiros
+	removerPrimeiro(pLista);
+	removerPrimeiro(pLista);
+	inserirOrdenado(pLista, novo);
+}
+
+TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
+	
+	TCelula *pPrimeiro, *pSegundo;
+	TNo *novo = (TNo*) malloc(sizeof(TNo));
+	float somaFrequencia;
+	
+	
+	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
+	
+		pPrimeiro = pLista->pPrimeiro;
+		pSegundo = pPrimeiro->pProx;
+	
+		somaFrequencia = pPrimeiro->NoCelula->item.frequencia + pSegundo->NoCelula->item.frequencia;
+		
+		printf("%f\n", somaFrequencia);
+		
+		novo->item.frequencia = somaFrequencia;
+		novo->pEsq = pPrimeiro->NoCelula;
+		novo->pDir = pSegundo->NoCelula;
+		
+		ReorganizaLista(pLista, novo);
+
+	}
+	return pLista->pPrimeiro->NoCelula;
 }
 
 void ImprimirArvore(TNo *Raiz){
@@ -263,7 +261,8 @@ int main(int argc, char **argv)
 	//Criando a referencia da lista, e o Tno Node
 	TLista lista;
 	TItem item;
-	int quantidade, i;
+	TNo *raiz;
+	int quantidade, i, totalOcorrencia;
 	
 	//iniciando a lista
 	iniciarLista(&lista);
@@ -275,8 +274,12 @@ int main(int argc, char **argv)
 		//Lê um item, chama a função CriaNo, a mesma cria o Nó e manda para a função inserirOrdenado
 		inserirOrdenado(&lista, criarNo(item));
 	}
+	printf("\nInsira a quntidade total de Ocorrencias: ");
+	scanf(" %d", &totalOcorrencia);
 	
+	raiz = MontaArvore(&lista);
 	
+	ImprimirTabela(raiz, totalOcorrencia);
 	
 	return 0;
 }
