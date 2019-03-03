@@ -66,6 +66,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
+		pLista->pUltimo = novo; //Pedro - Faltou inicilizar o primeiro elemento como sendo primeiro e o ultimo da lista
 		
 	} else {
 		while(pCelula != NULL) {
@@ -164,27 +165,8 @@ TNo* inserirNo(TNo* pR, TItem x) {
 //----------------------------------//
 
 //AINDA UTIL ESSA FUNCAO?(selectionSort) SE NAO, PODE APAGAR, E PUSH.
-void selectionSort (TItem *v, int n) {
-	int i, j, min;
-	TItem aux;
-	
-	for (i = 0; i < n-1; i++) {
-		min = i;
-		for (j = i+1; j < n; j++) {
-			if (v[j].frequencia < v[min].frequencia) {
-				min = j;
-			}
-		}
-		
-		if (i != min) {
-			aux = v[min];
-			v[min] = v[i];
-			v[i] = aux;
-		}
-	}
-}
 
-void InserirArvore(TLista *pLista, TNo *novo){
+void Remove2Primeiros(TLista *pLista, TNo *novo){
 	TNo *removido = NULL;
 	removerPrimeiro(pLista, removido);
 	printf("Item removido (%c , %2.f)\n", removido->item.simbolo, removido->item.frequencia);
