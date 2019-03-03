@@ -26,10 +26,10 @@ typedef struct {
 void iniciarLista (TLista *pLista);
 int isVazia (TLista *pLista);
 int inserirFim (TLista *pLista, TItem x);
-int removerPrimeiro (TLista *pLista, TItem *pX);
+int removerPrimeiro (TLista *pLista, TNo *pX);
 int removerUltimo (TLista *pLista, TItem *pX);
 void imprimir (TLista *pLista, int inverso);
-TCelula* buscaLista (TLista *pLista, int chave);
+TCelula* buscaLista (TLista *pLista, float frequencia);
 
 //Funçoes Arvores:
 TNo* criarNo(TItem x);
@@ -94,15 +94,17 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	return 1;
 }
 
-int removerPrimeiro (TLista *pLista, TItem *pX) {
-	if (isVazia (pLista))
+int removerPrimeiro (TLista *pLista, TNo *pX) {
+	if (isVazia (pLista)) {
 		return 0;
+	}
 	TCelula *pAux;
 	pAux = pLista->pPrimeiro;
-	*pX = pAux->item;
+	pX = pAux->NoCelula;
 	pLista->pPrimeiro = pAux->pProx;
 	pLista->pPrimeiro->pAnt = NULL;
 	free (pAux);
+	
 	return 1;
 }
 	
@@ -117,7 +119,7 @@ void imprimir (TLista *pLista, int inverso) {
 	}
 	
 	while (celula != NULL) {
-		printf ("%d ", celula->item.chave);
+		printf ("%f ", celula->NoCelula->item.frequencia);
 		if(inverso){
 		celula = celula->pAnt;
 		}else{
@@ -127,10 +129,10 @@ void imprimir (TLista *pLista, int inverso) {
 	printf("\n");
 }
 
-TCelula* buscaLista (TLista *pLista, int chave){
+TCelula* buscaLista (TLista *pLista, float frequencia){
 	TCelula *pAux = pLista->pPrimeiro;
 	while (pAux != NULL) {
-		if (pAux->item.chave == chave){
+		if (pAux->NoCelula->item.frequencia == frequencia){
 			return pAux;
 		}
 		pAux = pAux->pProx;
@@ -182,28 +184,33 @@ void selectionSort (TItem *v, int n) {
 	}
 }
 
-void InserirArvore(TLista plista, TNo *novo){
-	TNo *removido;
+void InserirArvore(TLista *pLista, TNo *novo){
+	TNo *removido = NULL;
 	removerPrimeiro(pLista, removido);
-	printf("Item removido");
+	printf("Item removido (%c , %2.f)\n", removido->item.simbolo, removido->item.frequencia);
 	removerPrimeiro(pLista, removido);
-	printf("Item removido");
-	InsereOrdenado(pLista, novo);
+	printf("Item removido (%c , %2.f)\n", removido->item.simbolo, removido->item.frequencia);
+	inserirOrdenado(pLista, novo);
 }
 
 void MontaArvore(TLista *pLista){ //Antiga funcao Soma
 	
-	float sum;
-		
 	TCelula *pAux, *pAux2;
+	TNo *novo = (TNo*) malloc(sizeof(TNo));
+	float somaFrequencia;
+	
 	pAux = pLista->pPrimeiro;
 	pAux2 = pAux->pProx;
 	
-	sum = pAux->item.frequencia + pAux2->item.frequencia;
+	somaFrequencia = pAux->NoCelula->item.frequencia + pAux2->NoCelula->item.frequencia;
 	
-	printf("%f\n", sum);
+	printf("%f\n", somaFrequencia);
 	
-	InsereArvore(sum, pAux, pAux2);
+	novo->item.frequencia = somaFrequencia;
+	novo->pEsq = pAux->NoCelula;
+	novo->pDir = pAux2->NoCelula;
+	
+	InserirArvore(pLista, novo);
 }
 
 void ImprimirArvore(TNo *Raiz){
@@ -220,6 +227,7 @@ void TaxaCompressao(TNo *Raiz, int bits, int quantidade){
 
 int main(int argc, char **argv)
 {
+	/*
 	TLista lista;
 	TItem item;
 	int i, j;
@@ -229,6 +237,9 @@ int main(int argc, char **argv)
 	printf("Insira quantos elementos deseja:\n");
 	scanf("%d", &j);
 	printf("Preencha com os simbolos e a frequencia:\n");
+	
+																Nem tem mais vetor... Pode apagar e push.
+	
 	for(i=0;i<j;i++){
 		scanf("\n%c", &item[i].simbolo);
 		scanf("%f", &item[i].frequencia);
@@ -240,7 +251,7 @@ int main(int argc, char **argv)
 	for(i=0;i<5;i++){
 		printf("%c %f ", item[i].simbolo, item[i].frequencia);
 	}
-	
+	*/
 	return 0;
 }
 
