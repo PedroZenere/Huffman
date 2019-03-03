@@ -8,13 +8,13 @@ typedef struct {
 
 typedef struct TNo {
 	TItem item;
-	struct No *pEsq, *pDir;
+	struct TNo *pEsq, *pDir;
 } TNo;
 
 typedef struct celula {
 	struct celula *pProx;
 	struct celula *pAnt;
-	TNo NoCelula;
+	TNo *NoCelula;
 
 } TCelula;
 
@@ -56,30 +56,40 @@ int isVazia (TLista *pLista) {
 
 int inserirOrdenado (TLista *pLista, TNo *x) {
 	TCelula *novo = (TCelula *) malloc (sizeof (TCelula));
-	novo->item = x;
+	novo->NoCelula = x;
 	novo->pProx = NULL;
 	novo->pAnt = NULL;
 	
+	TCelula *pCelula; //Variavel auxiliar para o codigo ficar mais legivel
+	TNo *pNo;		  //Variavel auxiliar para o codigo ficar mais legivel
+	pCelula = pLista->pPrimeiro;
+	
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
-
-	} else if (x->item.frequencia < pLista->pPrimeiro->item.frequencia){
-			TCelula *pAux;
-			pAux = pLista->pPrimeiro;
-			novo->pProx = pAux;
-			pLista->pPrimeiro = novo;
-		} 
-		else if (x->item.frequencia > pLista->pPrimeiro->item.frequencia){
-				TCelula *pAux = pLista->pPrimeiro;
-				while(pAux != NULL && x->item.frequencia < pAux->item.frequencia){
-					pAux = pAux->pProx;
+		
+	} else {
+		while(pCelula != NULL) {
+			pNo = pCelula->NoCelula; //pNo recebe o No da Celula sendo visitada a cada iteração
+			if(x->item.frequencia < pNo->item.frequencia) {
+				if(pCelula == pLista->pPrimeiro) { //Insere no Inicio
+					novo->pProx = pCelula;
+					pCelula->pAnt = novo;
+					pLista->pPrimeiro = novo;
+				} else if(pCelula == pLista->pUltimo) { //Insere no Fim
+					novo->pAnt = pCelula;
+					pCelula->pProx = novo;
+					pLista->pUltimo = novo;
+				} else {
+					pCelula->pAnt->pProx = novo; 
+					novo->pAnt = pCelula->pAnt;
+					pCelula->pAnt = novo;
+					novo->pProx = pCelula;
 				}
-				pAux
 			}
-		pLista->pUltimo->pProx = novo;
-		novo->pAnt = pLista->pUltimo;
+			pCelula = pCelula->pProx;
+		}
+		
 	}
-	pLista->pUltimo = novo;
 	
 	return 1;
 }
