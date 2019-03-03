@@ -38,8 +38,8 @@ void preOrdem(TNo *p);
 void emOrdem(TNo*p);
 
 //Funçoes Huffman:
-void MontaArvore(TLista *pLista);
-void Remove2Primeiros(TLista *pLista, TNo *novo);
+TNo* MontaArvore(TLista *pLista);
+void ReorganizaLista(TLista *pLista, TNo *novo);
 void ImprimirArvore(TNo *Raiz);
 void ImprimirTabela(TNo *Raiz, int totalOcorrencia);
 void TaxaCompressao(TNo *Raiz, int bits, int quantidade);
@@ -169,7 +169,7 @@ TNo* inserirNo(TNo* pR, TItem x) {
 
 //----------------------------------//
 
-void Remove2Primeiros(TLista *pLista, TNo *novo){
+void ReorganizaLista(TLista *pLista, TNo *novo){ //Antigo Remove2Primeiros
 	TNo *removido = NULL;
 	removerPrimeiro(pLista, removido);
 	printf("Item removido (%c , %2.f)\n", removido->item.simbolo, removido->item.frequencia);
@@ -178,7 +178,7 @@ void Remove2Primeiros(TLista *pLista, TNo *novo){
 	inserirOrdenado(pLista, novo);
 }
 
-void MontaArvore(TLista *pLista){ //Antiga funcao Soma
+TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
 	
 	TCelula *pAux, *pAux2;
 	TNo *novo = (TNo*) malloc(sizeof(TNo));
@@ -187,15 +187,19 @@ void MontaArvore(TLista *pLista){ //Antiga funcao Soma
 	pAux = pLista->pPrimeiro;
 	pAux2 = pAux->pProx;
 	
-	somaFrequencia = pAux->NoCelula->item.frequencia + pAux2->NoCelula->item.frequencia;
+	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
 	
-	printf("%f\n", somaFrequencia);
-	
-	novo->item.frequencia = somaFrequencia;
-	novo->pEsq = pAux->NoCelula;
-	novo->pDir = pAux2->NoCelula;
-	
-	Remove2Primeiros(pLista, novo);
+		somaFrequencia = pAux->NoCelula->item.frequencia + pAux2->NoCelula->item.frequencia;
+		
+		printf("%f\n", somaFrequencia);
+		
+		novo->item.frequencia = somaFrequencia;
+		novo->pEsq = pAux->NoCelula;
+		novo->pDir = pAux2->NoCelula;
+		
+		ReorganizaLista(pLista, novo);
+	}
+	return pLista->pPrimeiro->NoCelula;
 }
 
 void preOrdem(TNo *p) {
@@ -271,7 +275,9 @@ int main(int argc, char **argv)
 		//Lê um item, chama a função CriaNo, a mesma cria o Nó e manda para a função inserirOrdenado
 		inserirOrdenado(&lista, criarNo(item));
 	}
-
+	
+	
+	
 	return 0;
 }
 
