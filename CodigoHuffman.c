@@ -226,11 +226,11 @@ void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia){
 		return;
 	
 	char simbolo = p->item.simbolo;
-	int ocorrencia = p->item.frequencia * totalOcorrencia;
+	int ocorrencia = (p->item.frequencia / 100) * totalOcorrencia;
 	int bitsHuffman = ocorrencia * nivel;
 	
 	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
-		printf("\t| %c | %d | %d | %d |\n", simbolo, ocorrencia, binario, bitsHuffman);
+		printf("\t|    %c    |     %d        |   %d   |       %d    |\n", simbolo, ocorrencia, binario, bitsHuffman);
 		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia);
 		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia);
 	} else {
@@ -274,17 +274,17 @@ int main(int argc, char **argv)
 		//Lê um item, chama a função CriaNo, a mesma cria o Nó e manda para a função inserirOrdenado
 		inserirOrdenado(&lista, criarNo(item));
 	}
-	printf("\nInsira a quntidade total de Ocorrencias: ");
+	printf("\nInsira a quantidade total de Ocorrencias: ");
 	scanf(" %d", &totalOcorrencia);
 	
 	raiz = MontaArvore(&lista);
 	
-	ImprimirTabela(raiz, totalOcorrencia);
 	
 	return 0;
 }
 
 /*
 TESTE:
-a 48 c 9 g 12 k 4 p 17
+a 48 c 9 g 12 k 4 p 17 -> k 4, c 9, g 12, p 17, a 48 
+
 */
