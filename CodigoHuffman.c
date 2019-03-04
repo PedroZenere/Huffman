@@ -60,7 +60,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	novo->NoCelula = x;
 	novo->pProx = NULL;
 	novo->pAnt = NULL;
-	printf("ITEM a ser Inserido: %f\n", novo->NoCelula->item.frequencia);
+	//printf("ITEM a ser Inserido: %f\n", novo->NoCelula->item.frequencia);
 
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
@@ -72,7 +72,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 		pLista->pPrimeiro->pProx = pAux;
 		pAux->pAnt = pLista->pPrimeiro;
 		pLista->pPrimeiro->pAnt = NULL;
-		printf("1\n");
+		//printf("1\n");
 	} else if(novo->NoCelula->item.frequencia > pLista->pPrimeiro->NoCelula->item.frequencia) {
 		TCelula *pAux = pLista->pPrimeiro;
 		while (pAux != NULL && pAux->NoCelula->item.frequencia < novo->NoCelula->item.frequencia) {
@@ -82,19 +82,19 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 			pLista->pUltimo->pProx = novo;
 			novo->pAnt = pLista->pUltimo;
 			pLista->pUltimo = novo;
-			printf("Entrou aqui\n");
+			//printf("Entrou aqui\n");
 		} else {
 			pAux = pAux->pAnt;
-			printf("pAux: %f\n", pAux->NoCelula->item.frequencia);
+			//printf("pAux: %f\n", pAux->NoCelula->item.frequencia);
 			novo->pProx = pAux->pProx;
 			novo->pAnt = pAux;
 			pAux->pProx = novo;
 			novo->pProx->pAnt = novo;
-			printf("Insere Meio\n");
+			//printf("Insere Meio\n");
 		}
 	}
 	
-	imprimir(pLista, 0);
+	//imprimir(pLista, 0);
 	
 	return 1;
 }
@@ -105,22 +105,23 @@ int removerPrimeiro (TLista *pLista) {
 	}
 	TCelula *pAux;
 	pAux = pLista->pPrimeiro;
-	printf("\nPRIMEIRO DA LISTA: %f\n", pAux->NoCelula->item.frequencia);
+	//printf("\nPRIMEIRO DA LISTA: %f\n", pAux->NoCelula->item.frequencia);
 	if(pAux->pProx == NULL){
 		pLista->pPrimeiro = NULL;
 	}else {
 		pLista->pPrimeiro = pAux->pProx;
 		pLista->pPrimeiro->pAnt = NULL;
-		printf("ITEM REMOVIDO: %f\n", pAux->NoCelula->item.frequencia);
+		//printf("ITEM REMOVIDO: %f\n", pAux->NoCelula->item.frequencia);
 		//printf("ELEMENTO: %f\n", pLista->pPrimeiro->NoCelula->item.frequencia);
 		free (pAux);
-		printf("Lista após remover primeiro:\n");
-		imprimir(pLista, 0);
+		//printf("Lista após remover primeiro:\n");
+		//imprimir(pLista, 0);
 	}
 	
 	return 1;
 }
-	
+
+
 int imprimir (TLista *pLista, int inverso) {
 	TCelula *celula;
 	printf("Itens da lista: ");
@@ -146,6 +147,7 @@ int imprimir (TLista *pLista, int inverso) {
 	printf("\n\n");
 	return 0;
 }
+
 
 TCelula* buscaLista (TLista *pLista, float frequencia){
 	TCelula *pAux = pLista->pPrimeiro;
@@ -201,7 +203,6 @@ void ReorganizaLista(TLista *pLista, TNo *novo){ //Antigo Remove2Primeiros
 	removerPrimeiro(pLista);
 	removerPrimeiro(pLista);
 	inserirOrdenado(pLista, novo);
-	
 }
 
 TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
@@ -215,25 +216,25 @@ TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
 		pPrimeiro = pLista->pPrimeiro;
 		pSegundo = pPrimeiro->pProx;
 		
-		printf("PR: %f\n", pPrimeiro->NoCelula->item.frequencia);
-		printf("SEG: %f\n", pSegundo->NoCelula->item.frequencia);
+		//printf("PR: %f\n", pPrimeiro->NoCelula->item.frequencia);
+		//printf("SEG: %f\n", pSegundo->NoCelula->item.frequencia);
 	
 		somaFrequencia = pPrimeiro->NoCelula->item.frequencia + pSegundo->NoCelula->item.frequencia;
 		
-		printf("Frequencia: %f\n", somaFrequencia);
+		//printf("Frequencia: %f\n", somaFrequencia);
 		
 		novo->item.frequencia = somaFrequencia;
 		
 		//inserirNo(novo, pPrimeiro->NoCelula->item); //Isso aqui vai funcionar agora tambem!!
 		//inserirNo(novo, pSegundo->NoCelula->item);
 		novo->pEsq = pPrimeiro->NoCelula;
-		printf("No Esquerdo: %f      ", novo->pEsq->item.frequencia);
+		//printf("No Esquerdo: %f      ", novo->pEsq->item.frequencia);
 		novo->pDir = pSegundo->NoCelula;
-		printf("No Direito: %f      ", novo->pDir->item.frequencia);
-		printf("\n");
+		//printf("No Direito: %f      ", novo->pDir->item.frequencia);
+		//printf("\n");
 		
-		printf("IMPRIME NO MONTA\n");
-		imprimir(pLista, 0);
+		//printf("IMPRIME NO MONTA\n");
+		//imprimir(pLista, 0);
 		
 		ReorganizaLista(pLista, novo);
 
@@ -306,7 +307,7 @@ int main(int argc, char **argv)
 	
 	//iniciando a lista
 	iniciarLista(&lista);
-	printf("Insira a quantidade de simbolos:\n");
+	printf("Insira a quantidade de simbolos: ");
 	scanf("%d", &quantidade);
 	printf("\nInsira os Simbolos e sua respectiva Ocorrencia:\n");
 	for(i=0;i<quantidade;i++){
@@ -316,15 +317,11 @@ int main(int argc, char **argv)
 		inserirOrdenado(&lista, criarNo(item));
 	}
 
-	printf("\nInsira a quantidade total de Ocorrencias: ");
+	printf("Insira a quantidade total de Ocorrencias: ");
 	scanf(" %d", &totalOcorrencia);
-	//printf("\nDa Main:\n");
-	//imprimir(&lista, 0);
-	/*
-	printf("\nInsira a quantidade de espaço para armazenar em Bits:");
+	printf("\nInsira a quantidade de espaço para armazenar em Bits: ");
 	scanf("%d", &tamanhoBits);
-	*/
-
+	
 	raiz = MontaArvore(&lista);
 	
 	ImprimirTabela(raiz, totalOcorrencia);
