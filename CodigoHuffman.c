@@ -65,9 +65,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
 		pLista->pUltimo = novo;
-		
-	}
-	else if(novo->NoCelula->item.frequencia <= pLista->pPrimeiro->NoCelula->item.frequencia){
+	} else if(novo->NoCelula->item.frequencia <= pLista->pPrimeiro->NoCelula->item.frequencia){
 		TCelula *pAux;
 		pAux = pLista->pPrimeiro;
 		pLista->pPrimeiro = novo;
@@ -75,20 +73,17 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 		pAux->pAnt = pLista->pPrimeiro;
 		pLista->pPrimeiro->pAnt = NULL;
 		printf("1\n");
-	}
-	else if(novo->NoCelula->item.frequencia > pLista->pPrimeiro->NoCelula->item.frequencia){
+	} else if(novo->NoCelula->item.frequencia > pLista->pPrimeiro->NoCelula->item.frequencia) {
 		TCelula *pAux = pLista->pPrimeiro;
 		while (pAux != NULL && pAux->NoCelula->item.frequencia < novo->NoCelula->item.frequencia) {
 			pAux = pAux->pProx;
-		}
-		if(pAux == NULL){
+		} if(pAux == NULL) {
 			//quer dizer que é a ultima posição
 			pLista->pUltimo->pProx = novo;
 			novo->pAnt = pLista->pUltimo;
 			pLista->pUltimo = novo;
 			printf("Entrou aqui\n");
-		}
-		else {
+		} else {
 			pAux = pAux->pAnt;
 			printf("pAux: %f\n", pAux->NoCelula->item.frequencia);
 			novo->pProx = pAux->pProx;
@@ -210,11 +205,11 @@ void ReorganizaLista(TLista *pLista, TNo *novo){ //Antigo Remove2Primeiros
 }
 
 TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
-	
+	TNo *novo = NULL;
 	float somaFrequencia;
 	
 	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
-		TNo *novo = (TNo*) malloc(sizeof(TNo));
+		novo = (TNo*) malloc(sizeof(TNo));
 		TCelula *pPrimeiro, *pSegundo;
 		
 		pPrimeiro = pLista->pPrimeiro;
@@ -264,7 +259,7 @@ void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia){
 	int bitsHuffman = ocorrencia * nivel;
 	
 	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
-		printf("\t|    %c    |     %d        |   %d   |       %d    |\n", simbolo, ocorrencia, binario, bitsHuffman);
+		printf("\t|%10c|%16d|%12d|%14d|\n", simbolo, ocorrencia, binario, bitsHuffman);
 		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia);
 		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia);
 	} else {
@@ -278,11 +273,11 @@ void ImprimirTabela(TNo *Raiz, int totalOcorrencia){
 	int nivel = 0;
 	
 	printf("Tabela: \n");
-	printf("\t+----------+----------------+---------+--------------+\n");
-	printf("\t| Caracter | Nº Ocorrências | Binario | Bits Huffman |\n");
-	printf("\t+----------+----------------+---------+--------------+\n");
+	printf("\t+----------+----------------+------------+--------------+\n");
+	printf("\t| Caracter | Nº Ocorrências |  Binario   | Bits Huffman |\n");
+	printf("\t+----------+----------------+------------+--------------+\n");
 	PercorreArvore(Raiz, binario, nivel, totalOcorrencia);
-	printf("\t+----------+----------------+---------+--------------+\n");
+	printf("\t+----------+----------------+------------+--------------+\n");
 
 }
 
