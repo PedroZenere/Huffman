@@ -25,24 +25,20 @@ typedef struct {
 //Funçoes Lista:
 void iniciarLista (TLista *pLista);
 int isVazia (TLista *pLista);
-int inserirFim (TLista *pLista, TItem x);
+int inserirOrdenado (TLista *pLista, TNo *x);
 int removerPrimeiro (TLista *pLista);
-int removerUltimo (TLista *pLista, TItem *pX);
 int imprimir (TLista *pLista, int inverso);
-TCelula* buscaLista (TLista *pLista, float frequencia);
 
 //Funçoes Arvores:
 TNo* criarNo(TItem x);
-TNo* inserirNo(TNo* pR, TItem x);
 void preOrdem(TNo *p);
 void emOrdem(TNo*p);
 
 //Funçoes Huffman:
 TNo* MontaArvore(TLista *pLista);
 void ReorganizaLista(TLista *pLista, TNo *novo);
-void ImprimirArvore(TNo *Raiz);
-void ImprimirTabela(TNo *Raiz, int totalOcorrencia);
-void TaxaCompressao(int somaOcorrencia, int totalOcorrencia, int tamanhoBits);
+void ImprimirTabela(TNo *Raiz, int totalOcorrencia, int tamanhoBits);
+void TaxaCompressao(float somaOcorrencia, int totalOcorrencia, int tamanhoBits);
 
 //----------------------------------//
 
@@ -121,7 +117,6 @@ int removerPrimeiro (TLista *pLista) {
 	return 1;
 }
 
-
 int imprimir (TLista *pLista, int inverso) {
 	TCelula *celula;
 	printf("Itens da lista: ");
@@ -148,19 +143,6 @@ int imprimir (TLista *pLista, int inverso) {
 	return 0;
 }
 
-
-TCelula* buscaLista (TLista *pLista, float frequencia){
-	TCelula *pAux = pLista->pPrimeiro;
-	while (pAux != NULL) {
-		if (pAux->NoCelula->item.frequencia == frequencia){
-			return pAux;
-		}
-		pAux = pAux->pProx;
-	}
-	return NULL;
-	
-}
-
 //----------------------------------//
 
 TNo* criarNo(TItem x) {
@@ -171,16 +153,7 @@ TNo* criarNo(TItem x) {
 	return pAux;
 }
 
-TNo* inserirNo(TNo* pR, TItem x) {
-	if(pR== NULL)
-		pR= criarNo(x);
-	else if(pR->pEsq == NULL)
-		pR->pEsq= inserirNo(pR->pEsq, x);
-	else
-		pR->pDir= inserirNo(pR->pDir, x);
-	return pR;
-}
-
+//Funções Desnecessarias - Pode deixar pra DeBug
 void preOrdem(TNo *p) {
 	if (p == NULL) 
 		return;
@@ -246,12 +219,7 @@ TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
 	return pLista->pPrimeiro->NoCelula;
 }
 
-void ImprimirArvore(TNo *Raiz){
-//TODO
-//Poderiamos chamar a Função em Ordem que percorre a arvore buscando sempre primeiro a Raiz
-}
-
-void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia, int *totalHuffman){
+void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia, float *totalHuffman){
 	if(p == NULL)
 		return;
 	
@@ -271,12 +239,12 @@ void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia, int *to
 	}	
 }
 
-void ImprimirTabela(TNo *Raiz, int totalOcorrencia){
+void ImprimirTabela(TNo *Raiz, int totalOcorrencia, int tamanhoBits){
 	int binario = 0;
 	int nivel = 0;
-	int totalHuffman = 0;
+	float totalHuffman = 0;
 	
-	printf("Tabela: \n");
+	printf("\n\n --------------------------- TABELA DE SIMBOLOS --------------------------- \n\n");
 	printf("\t+----------+----------------+------------+--------------+\n");
 	printf("\t| Caracter | Nº Ocorrências |  Binario   | Bits Huffman |\n");
 	printf("\t+----------+----------------+------------+--------------+\n");
@@ -284,39 +252,43 @@ void ImprimirTabela(TNo *Raiz, int totalOcorrencia){
 	PercorreArvore(Raiz, binario, nivel, totalOcorrencia, &totalHuffman);
 	
 	printf("\t+----------+----------------+------------+--------------+\n");
-	printf("\t|  TOTAL   |%16d|            |%14d|\n", totalOcorrencia, totalHuffman);
+	printf("\t|  TOTAL   |%16d|            |%14.0f|\n", totalOcorrencia, totalHuffman);
 	printf("\t+----------+----------------+------------+--------------+\n");
 	
+	TaxaCompressao(totalHuffman, totalOcorrencia, tamanhoBits);
 
 }
 
-void TaxaCompressao(int somaOcorrencia, int totalOcorrencia, int tamanhoBits){
+void TaxaCompressao(float somaOcorrencia, int totalOcorrencia, int tamanhoBits){
 // somaOcorrencia: Recebe a soma total dos caracteres codificados
 // totalOcorrencia: Recebe o total de caracteres que o texto contem no total
 // tamanhoBits: Recebe o tamanho fixo em bits para cada caracter
+
 	float taxa = 0.0;
 	
-	taxa = ((1 - (somaOcorrencia/(totalOcorrencia*tamanhoBits)))*100);
+	taxa = ((1-(somaOcorrencia/(totalOcorrencia*tamanhoBits)))*100);
 	
-	printf("\nTaxa de Compressao aproximada: %f\n", taxa);
+	printf("\nTaxa de Compressao Aproximada: %f%%", taxa);
 	
-
 }
 
 int main(int argc, char **argv)
 {	
-	//Criando a referencia da lista, e o Tno Node
+	//Criando a referencia da lista, e da arvore
 	TLista lista;
 	TItem item;
 	TNo *raiz;
 	int quantidade, i, totalOcorrencia, tamanhoBits;
-	raiz = NULL;
 	
 	//iniciando a lista
 	iniciarLista(&lista);
+	//iniciando a arvore
+	raiz = NULL;
+	
+	printf("--------------------------- CODIFICACAO DE HUFFMAN ---------------------------\n\n");
 	printf("Insira a quantidade de simbolos: ");
 	scanf("%d", &quantidade);
-	printf("\nInsira os Simbolos e sua respectiva Ocorrencia:\n");
+	printf("Insira os Simbolos e sua respectiva Ocorrencia:\n");
 	for(i=0;i<quantidade;i++){
 		scanf("\n%c", &item.simbolo);
 		scanf("%f", &item.frequencia);
@@ -326,12 +298,11 @@ int main(int argc, char **argv)
 
 	printf("Insira a quantidade total de Ocorrencias: ");
 	scanf(" %d", &totalOcorrencia);
-	printf("\nInsira a quantidade de espaço para armazenar em Bits: ");
+	printf("Insira a quantidade de espaço para armazenar em Bits: ");
 	scanf("%d", &tamanhoBits);
 	
 	raiz = MontaArvore(&lista);
-	
-	ImprimirTabela(raiz, totalOcorrencia);
+	ImprimirTabela(raiz, totalOcorrencia, tamanhoBits);
 	
 	return 0;
 }
