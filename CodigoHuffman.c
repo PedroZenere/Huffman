@@ -28,7 +28,7 @@ int isVazia (TLista *pLista);
 int inserirFim (TLista *pLista, TItem x);
 int removerPrimeiro (TLista *pLista);
 int removerUltimo (TLista *pLista, TItem *pX);
-void imprimir (TLista *pLista, int inverso);
+int imprimir (TLista *pLista, int inverso);
 TCelula* buscaLista (TLista *pLista, float frequencia);
 
 //Funçoes Arvores:
@@ -56,60 +56,17 @@ int isVazia (TLista *pLista) {
 }
 
 int inserirOrdenado (TLista *pLista, TNo *x) {
-	//int achou;
 	TCelula *novo = (TCelula *) malloc (sizeof (TCelula));
 	novo->NoCelula = x;
 	novo->pProx = NULL;
 	novo->pAnt = NULL;
 	printf("ITEM a ser Inserido: %f\n", novo->NoCelula->item.frequencia);
-	/*
-	TCelula *pCelula; //Variavel auxiliar para o codigo ficar mais legivel
-	TNo *pNo;		  //Variavel auxiliar para o codigo ficar mais legivel
-	pCelula = pLista->pPrimeiro;
-	*/
-	//achou = 0;
+
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
 		pLista->pUltimo = novo;
 		
-	}/* else {
-		while(pCelula != NULL && achou == 0) {
-			pNo = pCelula->NoCelula; //pNo recebe o No da Celula sendo visitada a cada iteração
-			if(x->item.frequencia < pNo->item.frequencia) {
-				if(pCelula == pLista->pPrimeiro) { //Insere no Inicio
-					novo->pProx = pCelula;
-					pCelula->pAnt = novo;
-					pLista->pPrimeiro = novo;
-					printf("Primeiro\n");
-					
-				} else if(pCelula == pLista->pUltimo) { //Insere no Fim
-					novo->pAnt = pCelula;
-					pCelula->pProx = novo;
-					pLista->pUltimo = novo;
-					printf("Ultimo\n");
-					
-				} else {
-					pCelula->pAnt->pProx = novo; 
-					novo->pAnt = pCelula->pAnt;
-					pCelula->pAnt = novo;
-					novo->pProx = pCelula;
-				
-					pCelula = pCelula->pAnt;
-					printf("%f", pCelula->NoCelula->item.frequencia);
-					novo->pProx = pCelula->pProx;
-					novo->pAnt = pCelula;
-					pCelula->pProx = novo;
-					novo->pProx->pAnt = novo;
-					*
-					printf("Insere Meio\n");
-					
-				}
-				achou = 1;
-			}
-			pCelula = pCelula->pProx;
-		}
-	}*/
-	
+	}
 	else if(novo->NoCelula->item.frequencia <= pLista->pPrimeiro->NoCelula->item.frequencia){
 		TCelula *pAux;
 		pAux = pLista->pPrimeiro;
@@ -154,20 +111,28 @@ int removerPrimeiro (TLista *pLista) {
 	TCelula *pAux;
 	pAux = pLista->pPrimeiro;
 	printf("\nPRIMEIRO DA LISTA: %f\n", pAux->NoCelula->item.frequencia);
-	pLista->pPrimeiro = pAux->pProx;
-	pLista->pPrimeiro->pAnt = NULL;
-	free (pAux);
-	printf("ITEM REMOVIDO: %f\n", pAux->NoCelula->item.frequencia);
-	printf("ELEMENTO: %f\n", pLista->pPrimeiro->NoCelula->item.frequencia);
-	printf("Lista após remover primeiro:\n");
-	imprimir(pLista, 0);
+	if(pAux->pProx == NULL){
+		pLista->pPrimeiro = NULL;
+	}else {
+		pLista->pPrimeiro = pAux->pProx;
+		pLista->pPrimeiro->pAnt = NULL;
+		printf("ITEM REMOVIDO: %f\n", pAux->NoCelula->item.frequencia);
+		//printf("ELEMENTO: %f\n", pLista->pPrimeiro->NoCelula->item.frequencia);
+		free (pAux);
+		printf("Lista após remover primeiro:\n");
+		imprimir(pLista, 0);
+	}
 	
 	return 1;
 }
 	
-void imprimir (TLista *pLista, int inverso) {
+int imprimir (TLista *pLista, int inverso) {
 	TCelula *celula;
 	printf("Itens da lista: ");
+	if((isVazia(pLista))){
+		printf("Lista Vazia\n");
+		return 0;
+	}
 	
 	if(inverso){
 		celula = pLista->pUltimo;
@@ -184,6 +149,7 @@ void imprimir (TLista *pLista, int inverso) {
 		}
 	}
 	printf("\n\n");
+	return 0;
 }
 
 TCelula* buscaLista (TLista *pLista, float frequencia){
@@ -246,8 +212,6 @@ void ReorganizaLista(TLista *pLista, TNo *novo){ //Antigo Remove2Primeiros
 TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
 	
 	float somaFrequencia;
-	int i;
-	i = 0;
 	
 	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
 		TNo *novo = (TNo*) malloc(sizeof(TNo));
@@ -275,14 +239,13 @@ TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
 		
 		printf("IMPRIME NO MONTA\n");
 		imprimir(pLista, 0);
-		i++;
 		
 		ReorganizaLista(pLista, novo);
 
 	}
 	
-	printf("Imprime após o break:\n");
-	imprimir(pLista, 0);
+	//printf("Imprime após o break:\n");
+	//imprimir(pLista, 0);
 	
 	return pLista->pPrimeiro->NoCelula;
 }
@@ -367,6 +330,8 @@ int main(int argc, char **argv)
 	*/
 
 	raiz = MontaArvore(&lista);
+	printf("Arvore:\n");
+	emOrdem(raiz);
 	
 	return 0;
 }
