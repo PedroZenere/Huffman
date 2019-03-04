@@ -61,7 +61,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	novo->NoCelula = x;
 	novo->pProx = NULL;
 	novo->pAnt = NULL;
-	//printf("ITEM a ser Inserido: %f\n", novo->NoCelula->item.frequencia);
+	printf("ITEM a ser Inserido: %f\n", novo->NoCelula->item.frequencia);
 	/*
 	TCelula *pCelula; //Variavel auxiliar para o codigo ficar mais legivel
 	TNo *pNo;		  //Variavel auxiliar para o codigo ficar mais legivel
@@ -93,7 +93,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 					novo->pAnt = pCelula->pAnt;
 					pCelula->pAnt = novo;
 					novo->pProx = pCelula;
-					/*
+				
 					pCelula = pCelula->pAnt;
 					printf("%f", pCelula->NoCelula->item.frequencia);
 					novo->pProx = pCelula->pProx;
@@ -117,7 +117,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 		pLista->pPrimeiro->pProx = pAux;
 		pAux->pAnt = pLista->pPrimeiro;
 		pLista->pPrimeiro->pAnt = NULL;
-		//printf("1\n");
+		printf("1\n");
 	}
 	else if(novo->NoCelula->item.frequencia > pLista->pPrimeiro->NoCelula->item.frequencia){
 		TCelula *pAux = pLista->pPrimeiro;
@@ -129,20 +129,20 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 			pLista->pUltimo->pProx = novo;
 			novo->pAnt = pLista->pUltimo;
 			pLista->pUltimo = novo;
-			//printf("Entrou aqui\n");
+			printf("Entrou aqui\n");
 		}
 		else {
 			pAux = pAux->pAnt;
-			//printf("pAux: %f\n", pAux->NoCelula->item.frequencia);
+			printf("pAux: %f\n", pAux->NoCelula->item.frequencia);
 			novo->pProx = pAux->pProx;
 			novo->pAnt = pAux;
 			pAux->pProx = novo;
 			novo->pProx->pAnt = novo;
-			//printf("Insere Meio\n");
+			printf("Insere Meio\n");
 		}
 	}
 	
-	//imprimir(pLista, 0);
+	imprimir(pLista, 0);
 	
 	return 1;
 }
@@ -153,14 +153,14 @@ int removerPrimeiro (TLista *pLista) {
 	}
 	TCelula *pAux;
 	pAux = pLista->pPrimeiro;
-	//printf("\nPRIMEIRO DA LISTA: %f\n", pAux->NoCelula->item.frequencia);
+	printf("\nPRIMEIRO DA LISTA: %f\n", pAux->NoCelula->item.frequencia);
 	pLista->pPrimeiro = pAux->pProx;
 	pLista->pPrimeiro->pAnt = NULL;
 	free (pAux);
-	//printf("ITEM REMOVIDO: %f\n", pAux->NoCelula->item.frequencia);
-	//printf("ELEMENTO: %f\n", pLista->pPrimeiro->NoCelula->item.frequencia);
-	//printf("Lista após remover primeiro:\n");
-	//imprimir(pLista, 0);
+	printf("ITEM REMOVIDO: %f\n", pAux->NoCelula->item.frequencia);
+	printf("ELEMENTO: %f\n", pLista->pPrimeiro->NoCelula->item.frequencia);
+	printf("Lista após remover primeiro:\n");
+	imprimir(pLista, 0);
 	
 	return 1;
 }
@@ -245,33 +245,45 @@ void ReorganizaLista(TLista *pLista, TNo *novo){ //Antigo Remove2Primeiros
 
 TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
 	
-	TCelula *pPrimeiro, *pSegundo;
-	TNo *novo = (TNo*) malloc(sizeof(TNo));
 	float somaFrequencia;
-	
+	int i;
+	i = 0;
 	
 	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
-	
+		TNo *novo = (TNo*) malloc(sizeof(TNo));
+		TCelula *pPrimeiro, *pSegundo;
+		
 		pPrimeiro = pLista->pPrimeiro;
 		pSegundo = pPrimeiro->pProx;
+		
+		printf("PR: %f\n", pPrimeiro->NoCelula->item.frequencia);
+		printf("SEG: %f\n", pSegundo->NoCelula->item.frequencia);
 	
 		somaFrequencia = pPrimeiro->NoCelula->item.frequencia + pSegundo->NoCelula->item.frequencia;
 		
 		printf("Frequencia: %f\n", somaFrequencia);
 		
 		novo->item.frequencia = somaFrequencia;
-		novo->pEsq = pPrimeiro->NoCelula;
-		//printf("No Esquerdo: %f      ", novo->pEsq->item.frequencia);
-		novo->pDir = pSegundo->NoCelula;
-		//printf("No Direito: %f      ", novo->pDir->item.frequencia);
-		//printf("\n");
 		
-		//printf("IMPRIME NO MONTA\n");
-		//imprimir(pLista, 0);
+		//inserirNo(novo, pPrimeiro->NoCelula->item); //Isso aqui vai funcionar agora tambem!!
+		//inserirNo(novo, pSegundo->NoCelula->item);
+		novo->pEsq = pPrimeiro->NoCelula;
+		printf("No Esquerdo: %f      ", novo->pEsq->item.frequencia);
+		novo->pDir = pSegundo->NoCelula;
+		printf("No Direito: %f      ", novo->pDir->item.frequencia);
+		printf("\n");
+		
+		printf("IMPRIME NO MONTA\n");
+		imprimir(pLista, 0);
+		i++;
 		
 		ReorganizaLista(pLista, novo);
 
 	}
+	
+	printf("Imprime após o break:\n");
+	imprimir(pLista, 0);
+	
 	return pLista->pPrimeiro->NoCelula;
 }
 
