@@ -286,15 +286,9 @@ void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia, int som
 	somaOcorrencia += bitsHuffman;
 	
 	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
-<<<<<<< HEAD
-		printf("\t| %c | %d | %d | %d |\n", simbolo, ocorrencia, binario, bitsHuffman);
-		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia, somaOcorrencia);
-		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia, somaOcorrencia);
-=======
 		printf("\t|    %c    |     %d        |   %d   |       %d    |\n", simbolo, ocorrencia, binario, bitsHuffman);
 		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia);
-		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia);
->>>>>>> 05651034244f90cafb9cd0ca0484b12b3699ab7c
+		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia, somaOcorrencia);
 	} else {
 		return;
 	}
@@ -348,12 +342,8 @@ int main(int argc, char **argv)
 		//Lê um item, chama a função CriaNo, a mesma cria o Nó e manda para a função inserirOrdenado
 		inserirOrdenado(&lista, criarNo(item));
 	}
-<<<<<<< HEAD
-	
-	printf("\nInsira a quntidade total de Ocorrencias: ");
-=======
+
 	printf("\nInsira a quantidade total de Ocorrencias: ");
->>>>>>> 05651034244f90cafb9cd0ca0484b12b3699ab7c
 	scanf(" %d", &totalOcorrencia);
 	//printf("\nDa Main:\n");
 	//imprimir(&lista, 0);
@@ -364,19 +354,11 @@ int main(int argc, char **argv)
 
 	raiz = MontaArvore(&lista);
 	
-<<<<<<< HEAD
-=======
-	
->>>>>>> 05651034244f90cafb9cd0ca0484b12b3699ab7c
 	return 0;
 }
 
 /*
 TESTE:
-<<<<<<< HEAD
-a 48 c 9 ? 10 g 12 k 4 p 17
-=======
 a 48 c 9 g 12 k 4 p 17 -> k 4, c 9, g 12, p 17, a 48 
 
->>>>>>> 05651034244f90cafb9cd0ca0484b12b3699ab7c
 */
