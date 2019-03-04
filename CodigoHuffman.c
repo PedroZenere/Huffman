@@ -60,7 +60,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 	novo->NoCelula = x;
 	novo->pProx = NULL;
 	novo->pAnt = NULL;
-	printf("ITEM a ser Inserido: %f\n", novo->NoCelula->item.frequencia);
+	//printf("ITEM a ser Inserido: %f\n", novo->NoCelula->item.frequencia);
 
 	if (isVazia (pLista)) {
 		pLista->pPrimeiro = novo;
@@ -72,7 +72,7 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 		pLista->pPrimeiro->pProx = pAux;
 		pAux->pAnt = pLista->pPrimeiro;
 		pLista->pPrimeiro->pAnt = NULL;
-		printf("1\n");
+		//printf("1\n");
 	} else if(novo->NoCelula->item.frequencia > pLista->pPrimeiro->NoCelula->item.frequencia) {
 		TCelula *pAux = pLista->pPrimeiro;
 		while (pAux != NULL && pAux->NoCelula->item.frequencia < novo->NoCelula->item.frequencia) {
@@ -82,19 +82,19 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 			pLista->pUltimo->pProx = novo;
 			novo->pAnt = pLista->pUltimo;
 			pLista->pUltimo = novo;
-			printf("Entrou aqui\n");
+			//printf("Entrou aqui\n");
 		} else {
 			pAux = pAux->pAnt;
-			printf("pAux: %f\n", pAux->NoCelula->item.frequencia);
+			//printf("pAux: %f\n", pAux->NoCelula->item.frequencia);
 			novo->pProx = pAux->pProx;
 			novo->pAnt = pAux;
 			pAux->pProx = novo;
 			novo->pProx->pAnt = novo;
-			printf("Insere Meio\n");
+			//printf("Insere Meio\n");
 		}
 	}
 	
-	imprimir(pLista, 0);
+	//imprimir(pLista, 0);
 	
 	return 1;
 }
@@ -105,17 +105,17 @@ int removerPrimeiro (TLista *pLista) {
 	}
 	TCelula *pAux;
 	pAux = pLista->pPrimeiro;
-	printf("\nPRIMEIRO DA LISTA: %f\n", pAux->NoCelula->item.frequencia);
+	//printf("\nPRIMEIRO DA LISTA: %f\n", pAux->NoCelula->item.frequencia);
 	if(pAux->pProx == NULL){
 		pLista->pPrimeiro = NULL;
 	}else {
 		pLista->pPrimeiro = pAux->pProx;
 		pLista->pPrimeiro->pAnt = NULL;
-		printf("ITEM REMOVIDO: %f\n", pAux->NoCelula->item.frequencia);
+		//printf("ITEM REMOVIDO: %f\n", pAux->NoCelula->item.frequencia);
 		//printf("ELEMENTO: %f\n", pLista->pPrimeiro->NoCelula->item.frequencia);
 		free (pAux);
-		printf("Lista após remover primeiro:\n");
-		imprimir(pLista, 0);
+		//printf("Lista após remover primeiro:\n");
+		//imprimir(pLista, 0);
 	}
 	
 	return 1;
@@ -201,7 +201,6 @@ void ReorganizaLista(TLista *pLista, TNo *novo){ //Antigo Remove2Primeiros
 	removerPrimeiro(pLista);
 	removerPrimeiro(pLista);
 	inserirOrdenado(pLista, novo);
-	
 }
 
 TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
@@ -215,25 +214,25 @@ TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
 		pPrimeiro = pLista->pPrimeiro;
 		pSegundo = pPrimeiro->pProx;
 		
-		printf("PR: %f\n", pPrimeiro->NoCelula->item.frequencia);
-		printf("SEG: %f\n", pSegundo->NoCelula->item.frequencia);
+		//printf("PR: %f\n", pPrimeiro->NoCelula->item.frequencia);
+		//printf("SEG: %f\n", pSegundo->NoCelula->item.frequencia);
 	
 		somaFrequencia = pPrimeiro->NoCelula->item.frequencia + pSegundo->NoCelula->item.frequencia;
 		
-		printf("Frequencia: %f\n", somaFrequencia);
+		//printf("Frequencia: %f\n", somaFrequencia);
 		
 		novo->item.frequencia = somaFrequencia;
 		
 		//inserirNo(novo, pPrimeiro->NoCelula->item); //Isso aqui vai funcionar agora tambem!!
 		//inserirNo(novo, pSegundo->NoCelula->item);
 		novo->pEsq = pPrimeiro->NoCelula;
-		printf("No Esquerdo: %f      ", novo->pEsq->item.frequencia);
+		//printf("No Esquerdo: %f      ", novo->pEsq->item.frequencia);
 		novo->pDir = pSegundo->NoCelula;
-		printf("No Direito: %f      ", novo->pDir->item.frequencia);
-		printf("\n");
+		//printf("No Direito: %f      ", novo->pDir->item.frequencia);
+		//printf("\n");
 		
-		printf("IMPRIME NO MONTA\n");
-		imprimir(pLista, 0);
+		//printf("IMPRIME NO MONTA\n");
+		//imprimir(pLista, 0);
 		
 		ReorganizaLista(pLista, novo);
 
@@ -250,7 +249,7 @@ void ImprimirArvore(TNo *Raiz){
 //Poderiamos chamar a Função em Ordem que percorre a arvore buscando sempre primeiro a Raiz
 }
 
-void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia){
+void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia, int *totalHuffman){
 	if(p == NULL)
 		return;
 	
@@ -260,25 +259,32 @@ void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia){
 
 	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
 		printf("\t|%10c|%16d|%12d|%14d|\n", simbolo, ocorrencia, binario, bitsHuffman);
-		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia);
-		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia);
+		*totalHuffman += bitsHuffman;
+		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia, totalHuffman);
+		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia, totalHuffman);
+		
 	} else {
-		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia);
-		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia);
-	}
-	
+		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia, totalHuffman);
+		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia, totalHuffman);
+	}	
 }
 
 void ImprimirTabela(TNo *Raiz, int totalOcorrencia){
 	int binario = 0;
 	int nivel = 0;
+	int totalHuffman = 0;
 	
 	printf("Tabela: \n");
 	printf("\t+----------+----------------+------------+--------------+\n");
 	printf("\t| Caracter | Nº Ocorrências |  Binario   | Bits Huffman |\n");
 	printf("\t+----------+----------------+------------+--------------+\n");
-	PercorreArvore(Raiz, binario, nivel, totalOcorrencia);
+	
+	PercorreArvore(Raiz, binario, nivel, totalOcorrencia, &totalHuffman);
+	
 	printf("\t+----------+----------------+------------+--------------+\n");
+	printf("\t|  TOTAL   |%16d|            |%14d|\n", totalOcorrencia, totalHuffman);
+	printf("\t+----------+----------------+------------+--------------+\n");
+	
 
 }
 
