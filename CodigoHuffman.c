@@ -37,8 +37,8 @@ void emOrdem(TNo*p);
 //Funçoes Huffman:
 TNo* MontaArvore(TLista *pLista);
 void ReorganizaLista(TLista *pLista, TNo *novo);
-void ImprimirTabela(TNo *Raiz, int totalOcorrencia, int tamanhoBits);
-void TaxaCompressao(float somaOcorrencia, int totalOcorrencia, int tamanhoBits);
+void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits);
+void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia);
 
 //----------------------------------//
 
@@ -219,55 +219,58 @@ TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
 	return pLista->pPrimeiro->NoCelula;
 }
 
-void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia, float *totalHuffman){
+void PercorreArvore(TNo *p, int binario, int nivel, long int totalCaracteres, float *totalHuffman){
 	if(p == NULL)
 		return;
 	
 	char simbolo = p->item.simbolo;
 	float frequencia = p->item.frequencia;
-	float ocorrencia = (frequencia / 100.0) * totalOcorrencia;
+	float ocorrencia = (frequencia / 100.0) * totalCaracteres;
 	int bitsHuffman = ocorrencia * nivel;
 
 	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
 		printf("\t|%10c|%6.1f|%16.0f|%12d|%14d|\n", simbolo, frequencia, ocorrencia, binario, bitsHuffman);
 		*totalHuffman += bitsHuffman;
-		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia, totalHuffman);
-		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia, totalHuffman);
+		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalCaracteres, totalHuffman);
+		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalCaracteres, totalHuffman);
 		
 	} else {
-		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia, totalHuffman);
-		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia, totalHuffman);
+		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalCaracteres, totalHuffman);
+		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalCaracteres, totalHuffman);
 	}	
 }
 
-void ImprimirTabela(TNo *Raiz, int totalOcorrencia, int tamanhoBits){
+void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits){
 	int binario = 0;
 	int nivel = 0;
 	float totalHuffman = 0;
 	int frequencia = Raiz->item.frequencia;
+	
+	printf("%ld\n",totalOcorrencia);
+	printf("%ld\n",(totalOcorrencia/tamanhoBits));
 	
 	printf("\n\n --------------------------- TABELA DE SIMBOLOS --------------------------- \n\n");
 	printf("\t+----------+------+----------------+------------+--------------+\n");
 	printf("\t| Caracter |  %%   | Nº Ocorrências |  Binario   | Bits Huffman |\n");
 	printf("\t+----------+------+----------------+------------+--------------+\n");
 	
-	PercorreArvore(Raiz, binario, nivel, totalOcorrencia, &totalHuffman);
+	PercorreArvore(Raiz, binario, nivel, (totalOcorrencia/tamanhoBits), &totalHuffman);
 	
 	printf("\t+----------+------+----------------+------------+--------------+\n");
-	printf("\t|  TOTAL   |%6d|%16d|            |%14.0f|\n", frequencia ,totalOcorrencia, totalHuffman);
+	printf("\t|  TOTAL   |%6d|%16ld|            |%14.0f|\n", frequencia ,(totalOcorrencia/tamanhoBits), totalHuffman);
 	printf("\t+----------+------+----------------+------------+--------------+\n");	
 	
-	TaxaCompressao(totalHuffman, totalOcorrencia, tamanhoBits);
+	TaxaCompressao(totalHuffman, totalOcorrencia);
 }
 
-void TaxaCompressao(float somaOcorrencia, int totalOcorrencia, int tamanhoBits){
+void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia){
 // somaOcorrencia: Recebe a soma total dos caracteres codificados
 // totalOcorrencia: Recebe o total de caracteres que o texto contem no total
 // tamanhoBits: Recebe o tamanho fixo em bits para cada caracter
 
 	float taxa = 0.0;
 	
-	taxa = ((1-(somaOcorrencia/(totalOcorrencia*tamanhoBits)))*100);
+	taxa = (1-(somaOcorrencia/totalOcorrencia))*100;
 	
 	printf("\nTaxa de Compressao Aproximada: %f%%", taxa);
 	
@@ -279,7 +282,8 @@ int main(int argc, char **argv)
 	TLista lista;
 	TItem item;
 	TNo *raiz;
-	int quantidade, i, totalOcorrencia, tamanhoBits;
+	int quantidade, i, tamanhoBits;
+	long int totalOcorrencia;
 	
 	//iniciando a lista
 	iniciarLista(&lista);
@@ -298,7 +302,7 @@ int main(int argc, char **argv)
 	}
 
 	printf("Insira a quantidade total de Ocorrencias: ");
-	scanf(" %d", &totalOcorrencia);
+	scanf(" %ld", &totalOcorrencia);
 	printf("Insira a quantidade de espaço para armazenar em Bits: ");
 	scanf("%d", &tamanhoBits);
 	
@@ -316,8 +320,7 @@ TESTE 2 (SLIDE):
 INPUT: A 2 B 5 C 1 E 2 P 1 0 18 1 13 2 7 3 12 4 9 5 6 6 11 7 7 8 2 9 4
 ORDENADO: (C,1) (P,1) (A,2) (E,2) (8,2) (9,4) (B,5) (5,6) (2,7) (7,7) (4,9) (6,11) (3,12) (1,13) (0,18)
 CARACTER: 8 BITS
-TOTAL OCORRENCIA: 562500000
-
+TOTAL OCORRENCIA: 4500000000 (4.5Gb)
 TAXA DE COMPRESSAO: 55.63%
 
 */
