@@ -251,7 +251,7 @@ void ImprimirArvore(TNo *Raiz){
 //Poderiamos chamar a Função em Ordem que percorre a arvore buscando sempre primeiro a Raiz
 }
 
-void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia){
+void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia, int *totalHuffman){
 	if(p == NULL)
 		return;
 	
@@ -261,25 +261,32 @@ void PercorreArvore(TNo *p, int binario, int nivel, int totalOcorrencia){
 
 	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
 		printf("\t|%10c|%16d|%12d|%14d|\n", simbolo, ocorrencia, binario, bitsHuffman);
-		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia);
-		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia);
+		*totalHuffman += bitsHuffman;
+		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia, totalHuffman);
+		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia, totalHuffman);
+		
 	} else {
-		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia);
-		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia);
-	}
-	
+		PercorreArvore(p->pEsq, (binario*10), nivel+1, totalOcorrencia, totalHuffman);
+		PercorreArvore(p->pDir, (binario*10)+1, nivel+1, totalOcorrencia, totalHuffman);
+	}	
 }
 
 void ImprimirTabela(TNo *Raiz, int totalOcorrencia){
 	int binario = 0;
 	int nivel = 0;
+	int totalHuffman = 0;
 	
 	printf("Tabela: \n");
 	printf("\t+----------+----------------+------------+--------------+\n");
 	printf("\t| Caracter | Nº Ocorrências |  Binario   | Bits Huffman |\n");
 	printf("\t+----------+----------------+------------+--------------+\n");
-	PercorreArvore(Raiz, binario, nivel, totalOcorrencia);
+	
+	PercorreArvore(Raiz, binario, nivel, totalOcorrencia, &totalHuffman);
+	
 	printf("\t+----------+----------------+------------+--------------+\n");
+	printf("\t|  TOTAL   |%16d|            |%14d|\n", totalOcorrencia, totalHuffman);
+	printf("\t+----------+----------------+------------+--------------+\n");
+	
 
 }
 
