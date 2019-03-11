@@ -222,7 +222,7 @@ void PercorreArvore(TNo *p, char *binario, int nivel, long int totalCaracteres, 
 }
 
 void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits){
-	char binario[10]; //TEM QUE MUDAR ISSO
+	char binario[tamanhoBits];
 	int nivel = 0;
 	double totalHuffman = 0;
 	int frequencia = Raiz->item.frequencia;
