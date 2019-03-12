@@ -30,10 +30,8 @@ int removerPrimeiro (TLista *pLista);
 void eAVL(TNo* pR);
 void preOrdem(TNo *p);
 
-//Função Arvore:
-TNo* criarNo(TItem x);
-
 //Função Arvore AVL:
+TNo* criarNo(TItem x);
 int altura (TNo* pRaiz);
 int fb (TNo* pRaiz);
 TNo* rotacaoSimplesDireita(TNo* pR);
@@ -51,7 +49,7 @@ int BuscaCaracter(TNo *pNo, char caracter, TNo *pX);
 TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo);
 TNo* MontaArvoreCaracter(FILE *arquivo);
 
-//----------------------------------//
+// ----------- Funcoes Lista -------------- //
 
 void iniciarLista (TLista *pLista) {
 	pLista->pPrimeiro = NULL;
@@ -115,7 +113,10 @@ int removerPrimeiro (TLista *pLista) {
 	return 1;
 }
 
-//----------------------------------//
+// -------------------------------------- //
+
+
+// ----------- Funcoes AVL -------------- //
 
 TNo* criarNo(TItem x) {
 	TNo* pAux = (TNo*) malloc(sizeof(TNo));
@@ -124,93 +125,6 @@ TNo* criarNo(TItem x) {
 	pAux->pDir= NULL;
 	return pAux;
 }
-
-//----------------------------------//
-
-void ReorganizaLista(TLista *pLista, TNo *novo){
-	removerPrimeiro(pLista);
-	removerPrimeiro(pLista);
-	inserirOrdenado(pLista, novo);
-}
-
-TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
-	TNo *novo = NULL;
-	float somaFrequencia;
-	
-	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
-		novo = (TNo*) malloc(sizeof(TNo));
-		TCelula *pPrimeiro, *pSegundo;
-		
-		pPrimeiro = pLista->pPrimeiro;
-		pSegundo = pPrimeiro->pProx;
-		
-		somaFrequencia = pPrimeiro->NoCelula->item.frequencia + pSegundo->NoCelula->item.frequencia;
-		
-		novo->item.frequencia = somaFrequencia;
-		novo->pEsq = pPrimeiro->NoCelula;
-		novo->pDir = pSegundo->NoCelula;
-		
-		ReorganizaLista(pLista, novo);
-	}
-	return pLista->pPrimeiro->NoCelula;
-}
-
-void PercorreArvore(TNo *p, char *binario, int nivel, long int totalCaracteres, double *totalHuffman){
-	if(p == NULL)
-		return;
-	
-	char simbolo = p->item.simbolo;
-	float frequencia = p->item.frequencia;
-	float ocorrencia = (frequencia / 100.0) * totalCaracteres;
-	int bitsHuffman = ocorrencia * nivel;
-
-	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
-		printf("\t|%10c|%6.1f|%16.0f|%12s|%14d|\n", simbolo, frequencia, ocorrencia, binario, bitsHuffman);
-		*totalHuffman += bitsHuffman;
-	}
-	binario[nivel] = '0';
-	binario[nivel+1] = '\0';
-	PercorreArvore(p->pEsq, binario, nivel+1, totalCaracteres, totalHuffman);
-	binario[nivel] = '1';
-	binario[nivel+1] = '\0';
-	PercorreArvore(p->pDir, binario, nivel+1, totalCaracteres, totalHuffman);
-}
-
-void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits){
-	char binario[tamanhoBits];
-	int nivel = 0;
-	double totalHuffman = 0;
-	int frequencia = Raiz->item.frequencia;
-	
-	binario[0] = '0';
-	
-	printf("\n\n --------------------------- TABELA DE SIMBOLOS --------------------------- \n\n");
-	printf("\t+----------+------+----------------+------------+--------------+\n");
-	printf("\t| Caracter |  %%   | Nº Ocorrências |  Binario   | Bits Huffman |\n");
-	printf("\t+----------+------+----------------+------------+--------------+\n");
-	
-	PercorreArvore(Raiz, binario, nivel, (totalOcorrencia/tamanhoBits), &totalHuffman);
-	
-	printf("\t+----------+------+----------------+------------+--------------+\n");
-	printf("\t|  TOTAL   |%6d|%16ld|            |%14.0f|\n", frequencia ,(totalOcorrencia/tamanhoBits), totalHuffman);
-	printf("\t+----------+------+----------------+------------+--------------+\n");	
-	
-	TaxaCompressao(totalHuffman, totalOcorrencia);
-}
-
-void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia){
-// somaOcorrencia: Recebe a soma total dos caracteres codificados
-// totalOcorrencia: Recebe o total de caracteres que o texto contem no total
-
-	float taxa = 0.0;
-	
-	taxa = (1-(somaOcorrencia/totalOcorrencia))*100;
-	
-	printf("\nTaxa de Compressao Aproximada: %f%%", taxa);
-	
-}
-
-// ----------- Funcoes AVL -------------- //
 
 int altura (TNo* pRaiz) { 
 	int iEsq, iDir; 
@@ -306,6 +220,91 @@ void preOrdem(TNo *p) {
 
 // -------------------------------------- //
 
+// ----------- Funcoes Huffman -------------- //
+
+void ReorganizaLista(TLista *pLista, TNo *novo){
+	removerPrimeiro(pLista);
+	removerPrimeiro(pLista);
+	inserirOrdenado(pLista, novo);
+}
+
+TNo* MontaArvore(TLista *pLista){ //Retorna o nó raiz da arvore
+	TNo *novo = NULL;
+	float somaFrequencia;
+	
+	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
+		novo = (TNo*) malloc(sizeof(TNo));
+		TCelula *pPrimeiro, *pSegundo;
+		
+		pPrimeiro = pLista->pPrimeiro;
+		pSegundo = pPrimeiro->pProx;
+		
+		somaFrequencia = pPrimeiro->NoCelula->item.frequencia + pSegundo->NoCelula->item.frequencia;
+		
+		novo->item.frequencia = somaFrequencia;
+		novo->pEsq = pPrimeiro->NoCelula;
+		novo->pDir = pSegundo->NoCelula;
+		
+		ReorganizaLista(pLista, novo);
+	}
+	return pLista->pPrimeiro->NoCelula;
+}
+
+void PercorreArvore(TNo *p, char *binario, int nivel, long int totalCaracteres, double *totalHuffman){
+	if(p == NULL)
+		return;
+	
+	char simbolo = p->item.simbolo;
+	float frequencia = p->item.frequencia;
+	float ocorrencia = (frequencia / 100.0) * totalCaracteres;
+	int bitsHuffman = ocorrencia * nivel;
+
+	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
+		printf("\t|%10c|%6.1f|%16.0f|%12s|%14d|\n", simbolo, frequencia, ocorrencia, binario, bitsHuffman);
+		*totalHuffman += bitsHuffman;
+	}
+	binario[nivel] = '0';
+	binario[nivel+1] = '\0';
+	PercorreArvore(p->pEsq, binario, nivel+1, totalCaracteres, totalHuffman);
+	binario[nivel] = '1';
+	binario[nivel+1] = '\0';
+	PercorreArvore(p->pDir, binario, nivel+1, totalCaracteres, totalHuffman);
+}
+
+void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits){
+	char binario[tamanhoBits];
+	int nivel = 0;
+	double totalHuffman = 0;
+	int frequencia = Raiz->item.frequencia;
+	
+	binario[0] = '0';
+	
+	printf("\n\n --------------------------- TABELA DE SIMBOLOS --------------------------- \n\n");
+	printf("\t+----------+------+----------------+------------+--------------+\n");
+	printf("\t| Caracter |  %%   | Nº Ocorrências |  Binario   | Bits Huffman |\n");
+	printf("\t+----------+------+----------------+------------+--------------+\n");
+	
+	PercorreArvore(Raiz, binario, nivel, (totalOcorrencia/tamanhoBits), &totalHuffman);
+	
+	printf("\t+----------+------+----------------+------------+--------------+\n");
+	printf("\t|  TOTAL   |%6d|%16ld|            |%14.0f|\n", frequencia ,(totalOcorrencia/tamanhoBits), totalHuffman);
+	printf("\t+----------+------+----------------+------------+--------------+\n");	
+	
+	TaxaCompressao(totalHuffman, totalOcorrencia);
+}
+
+void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia){
+// somaOcorrencia: Recebe a soma total dos caracteres codificados
+// totalOcorrencia: Recebe o total de caracteres que o texto contem no total
+
+	float taxa = 0.0;
+	
+	taxa = (1-(somaOcorrencia/totalOcorrencia))*100;
+	
+	printf("\nTaxa de Compressao Aproximada: %f%%", taxa);
+	
+}
+
 int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 	if(pNo == NULL){
 		return 0;
@@ -372,21 +371,36 @@ TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
 	return raiz;
 }
 
+// -------------------------------------- //
+
 int main(int argc, char **argv)
 {	
 	//Criando a referencia da lista, e da arvore
 	TLista lista;
-	TItem item;
-	TNo *raiz;
-	int quantidade, i, tamanhoBits;
-	long int totalOcorrencia;
+	//TItem item;
+	TNo *raizCaracter;
+	//int quantidade, i;
+	int tamanhoBits;
+	//long int totalOcorrencia;
+	FILE *arquivo;
 	
 	//iniciando a lista
 	iniciarLista(&lista);
 	//iniciando a arvore
-	raiz = NULL;
+	raizCaracter = NULL;
 	
 	printf("--------------------------- CODIFICACAO DE HUFFMAN ---------------------------\n\n");
+	printf("Insira a quantidade de espaço para armazenar em Bits: ");
+	scanf("%d", &tamanhoBits);
+	arquivo = fopen("dados.txt", "r");
+	
+	if(arquivo == NULL)
+		printf("Erro ao abrir arquivo!\n");
+	else
+		raizCaracter = MontaArvoreCaracter(arquivo);
+	
+	
+	/*
 	printf("Insira a quantidade de simbolos: ");
 	scanf("%d", &quantidade);
 	printf("Insira os Simbolos e sua respectiva Ocorrencia:\n");
@@ -399,12 +413,11 @@ int main(int argc, char **argv)
 
 	printf("Insira a quantidade total de Ocorrencias: ");
 	scanf(" %ld", &totalOcorrencia);
-	printf("Insira a quantidade de espaço para armazenar em Bits: ");
-	scanf("%d", &tamanhoBits);
 	
 	raiz = MontaArvore(&lista);
 	ImprimirTabela(raiz, totalOcorrencia, tamanhoBits);
-	
+	*/
+
 	return 0;
 }
 
