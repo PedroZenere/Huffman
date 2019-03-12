@@ -308,21 +308,20 @@ void preOrdem(TNo *p) {
 
 int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 	if(pNo == NULL){
-		return 0;
+		return 1;
 	} else if(pNo->item.simbolo == caracter) {
 		pX = pNo;
-		return 1;
+		return 0;
 	} else {
 		if(caracter < pNo->item.simbolo) {
-			BuscaCaracter(pNo->pEsq, caracter, pX);
+			return BuscaCaracter(pNo->pEsq, caracter, pX);
 		}
 		
 		if(caracter > pNo->item.simbolo) {
-			BuscaCaracter(pNo->pDir, caracter, pX);
+			return BuscaCaracter(pNo->pDir, caracter, pX);
 		}
 	}
-	
-	return 2;
+	return 1;
 }
 
 TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo){
