@@ -36,7 +36,7 @@ TNo* MontaArvoreHuffman(TLista *pLista);
 void ReorganizaLista(TLista *pLista, TNo *novo);
 void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits);
 void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia);
-int BuscaCaracter(TNo *raiz, char caracter, TNo *pX);
+int BuscaCaracter(TNo *pNo, char caracter, TNo *pX);
 void InserirArvoreBalanceada(TNo *raiz, TNo *novo);
 TNo* MontaArvoreCaracter(FILE *arquivo);
 
@@ -199,8 +199,21 @@ void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia){
 	
 }
 
-int BuscaCaracter(TNo *raiz, char caracter, TNo *pX){
-	return 0;
+int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
+	if(pNo == NULL){
+		return 0;
+	} else if(pNo->item.simbolo == caracter) {
+		pX = pNo;
+		return 1;
+	} else {
+		if(caracter < pNo->item.simbolo) {
+			BuscaCaracter(pNo->pEsq, caracter, pX);
+		}
+		
+		if(caracter > pNo->item.simbolo) {
+			BuscaCaracter(pNo->pDir, caracter, pX);
+		}
+	}
 }
 
 void InserirArvoreBalanceada(TNo *raiz, TNo *novo){
@@ -230,6 +243,7 @@ TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
 			InserirArvoreBalanceada(raiz, novo);
 		}
 	}
+	return raiz;
 }
 
 int main(int argc, char **argv)
