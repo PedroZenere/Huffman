@@ -213,7 +213,7 @@ void eAVL(TNo* pR){
 void preOrdem(TNo *p) {
 	if (p == NULL) 
 		return;
-	printf("%c\n", p->item.simbolo);
+	printf("Caracter: %c Frequencia: %f\n", p->item.simbolo, p->item.frequencia);
 	preOrdem(p->pEsq);
 	preOrdem(p->pDir);
 }
@@ -309,8 +309,8 @@ int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 	if(pNo == NULL){
 		return 0;
 	} else if(pNo->item.simbolo == caracter) {
-		printf("pNo: %c\n", pNo->item.simbolo);
-		printf("caracter: %c\n", caracter);
+		//printf("pNo: %c\n", pNo->item.simbolo);
+		//printf("caracter: %c\n", caracter);
 		pX = pNo;
 		return 1;
 	} else {
@@ -328,10 +328,10 @@ int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo){
 	//Organizar a arvore em ordem alfabetica ou por frequencia?
 	//Acredito que por frequencia vai ser mais eficiente
-	printf("Entrou\n");
+	//printf("Entrou\n");
 	
 	if(raiz == NULL)
-		raiz = criarNo(novo->item);
+		raiz = novo;
 	else if(novo->item.simbolo < raiz->item.simbolo)
 		raiz->pEsq = InserirArvoreBalanceada(raiz->pEsq, novo);
 	else
@@ -346,20 +346,20 @@ TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
 	char caracter;
 	
 	caracter = fgetc(arquivo);
-	printf("Caracter: %c\n", caracter);
+	//printf("Caracter: %c\n", caracter);
 	item.simbolo = caracter;
 	item.frequencia = 1;
 	raiz = criarNo(item);
 
 	while((caracter = fgetc(arquivo)) != EOF){
 		if(BuscaCaracter(raiz, caracter, &pX)){
-			printf("Caracter: %c\n", caracter);
+			//printf("Caracter: %c\n", caracter);
 			pX.item.frequencia++;
 		} else {
 			item.simbolo = caracter;
 			item.frequencia = 1;
 			novo = criarNo(item);
-			printf("Caracter: %c\n", caracter);
+			//printf("Caracter: %c\n", caracter);
 			InserirArvoreBalanceada(raiz, novo);
 			/*
 			printf("NO: %c\n", raiz->item.simbolo);
@@ -368,16 +368,15 @@ TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
 			if(raiz->pDir != NULL)
 				printf("Filho Dir: %c\n", raiz->pDir->item.simbolo);
 			*/
-			preOrdem(raiz);
+			//preOrdem(raiz);
 		}
 	}
 	
 	//balanceia a arvore
-	balanceamento(raiz);
+	//balanceamento(raiz);
 	//verifica se o balanceamento deu certo
-	eAVL(raiz);
+	//eAVL(raiz);
 	//percorre a arvore para teste
-	preOrdem(raiz);
 	
 	return raiz;
 }
@@ -428,6 +427,8 @@ int main(int argc, char **argv)
 	raiz = MontaArvore(&lista);
 	ImprimirTabela(raiz, totalOcorrencia, tamanhoBits);
 	*/
+	
+	preOrdem(raizCaracter);
 
 	return 0;
 }
