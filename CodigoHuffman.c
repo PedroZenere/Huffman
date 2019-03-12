@@ -309,6 +309,8 @@ int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 	if(pNo == NULL){
 		return 0;
 	} else if(pNo->item.simbolo == caracter) {
+		printf("pNo: %c\n", pNo->item.simbolo);
+		printf("caracter: %c\n", caracter);
 		pX = pNo;
 		return 1;
 	} else {
@@ -339,27 +341,34 @@ TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo){
 }
 
 TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
-	TNo *novo, *raiz, *pX;
+	TNo *novo, *raiz, pX;
 	TItem item;
 	char caracter;
 	
-	pX = NULL;
-	
 	caracter = fgetc(arquivo);
+	printf("Caracter: %c\n", caracter);
 	item.simbolo = caracter;
 	item.frequencia = 1;
 	raiz = criarNo(item);
 
 	while((caracter = fgetc(arquivo)) != EOF){
-		if(BuscaCaracter(raiz, caracter, pX)){
-			printf("EntrouMonta\n");
-			pX->item.frequencia++;
+		if(BuscaCaracter(raiz, caracter, &pX)){
+			printf("Caracter: %c\n", caracter);
+			pX.item.frequencia++;
 		} else {
 			item.simbolo = caracter;
 			item.frequencia = 1;
 			novo = criarNo(item);
-			
+			printf("Caracter: %c\n", caracter);
 			InserirArvoreBalanceada(raiz, novo);
+			/*
+			printf("NO: %c\n", raiz->item.simbolo);
+			if(raiz->pEsq != NULL)
+				printf("Filho Esq: %c\n", raiz->pEsq->item.simbolo);
+			if(raiz->pDir != NULL)
+				printf("Filho Dir: %c\n", raiz->pDir->item.simbolo);
+			*/
+			preOrdem(raiz);
 		}
 	}
 	
