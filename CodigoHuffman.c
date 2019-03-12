@@ -32,10 +32,13 @@ int removerPrimeiro (TLista *pLista);
 TNo* criarNo(TItem x);
 
 //Funçoes Huffman:
-TNo* MontaArvore(TLista *pLista);
+TNo* MontaArvoreHuffman(TLista *pLista);
 void ReorganizaLista(TLista *pLista, TNo *novo);
 void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits);
 void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia);
+int BuscaCaracter(TNo *raiz, char caracter, TNo *pX);
+void InserirArvoreBalanceada(TNo *raiz, TNo *novo);
+TNo* MontaArvoreCaracter(FILE *arquivo);
 
 //----------------------------------//
 
@@ -194,6 +197,39 @@ void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia){
 	
 	printf("\nTaxa de Compressao Aproximada: %f%%", taxa);
 	
+}
+
+int BuscaCaracter(TNo *raiz, char caracter, TNo *pX){
+	return 0;
+}
+
+void InserirArvoreBalanceada(TNo *raiz, TNo *novo){
+	//Organizar a arvore em ordem alfabetica ou por frequencia?
+	//Acredito que por frequencia vai ser mais eficiente
+}
+
+TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
+	TNo *novo, *raiz, *pX;
+	TItem item;
+	char caracter;
+	
+	pX = NULL;
+	
+	caracter = fgetc(arquivo);
+	item.simbolo = caracter;
+	item.frequencia = 1;
+	raiz = criarNo(item);
+	
+	while((caracter = fgetc(arquivo)) != EOF){
+		if(BuscaCaracter(raiz, caracter, pX)){
+			pX->item.frequencia++;
+		} else {
+			item.simbolo = caracter;
+			item.frequencia = 1;
+			novo = criarNo(item);
+			InserirArvoreBalanceada(raiz, novo);
+		}
+	}
 }
 
 int main(int argc, char **argv)
