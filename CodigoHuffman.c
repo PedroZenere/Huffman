@@ -307,10 +307,10 @@ void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia){
 
 int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 	if(pNo == NULL){
-		return 1;
+		return 0;
 	} else if(pNo->item.simbolo == caracter) {
 		pX = pNo;
-		return 0;
+		return 1;
 	} else {
 		if(caracter < pNo->item.simbolo) {
 			return BuscaCaracter(pNo->pEsq, caracter, pX);
@@ -320,12 +320,13 @@ int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 			return BuscaCaracter(pNo->pDir, caracter, pX);
 		}
 	}
-	return 1;
+	return 0;
 }
 
 TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo){
 	//Organizar a arvore em ordem alfabetica ou por frequencia?
 	//Acredito que por frequencia vai ser mais eficiente
+	printf("Entrou\n");
 	
 	if(raiz == NULL)
 		raiz = criarNo(novo->item);
@@ -348,14 +349,16 @@ TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
 	item.simbolo = caracter;
 	item.frequencia = 1;
 	raiz = criarNo(item);
-	
+
 	while((caracter = fgetc(arquivo)) != EOF){
 		if(BuscaCaracter(raiz, caracter, pX)){
+			printf("EntrouMonta\n");
 			pX->item.frequencia++;
 		} else {
 			item.simbolo = caracter;
 			item.frequencia = 1;
 			novo = criarNo(item);
+			
 			InserirArvoreBalanceada(raiz, novo);
 		}
 	}
@@ -379,7 +382,7 @@ int main(int argc, char **argv)
 	//TItem item;
 	TNo *raizCaracter;
 	//int quantidade, i;
-	int tamanhoBits;
+	//int tamanhoBits;
 	//long int totalOcorrencia;
 	FILE *arquivo;
 	
@@ -389,8 +392,8 @@ int main(int argc, char **argv)
 	raizCaracter = NULL;
 	
 	printf("--------------------------- CODIFICACAO DE HUFFMAN ---------------------------\n\n");
-	printf("Insira a quantidade de espaço para armazenar em Bits: ");
-	scanf("%d", &tamanhoBits);
+	//printf("Insira a quantidade de espaço para armazenar em Bits: ");
+	//scanf("%d", &tamanhoBits);
 	arquivo = fopen("dados.txt", "r");
 	
 	if(arquivo == NULL)
