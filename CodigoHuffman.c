@@ -27,9 +27,20 @@ void iniciarLista (TLista *pLista);
 int isVazia (TLista *pLista);
 int inserirOrdenado (TLista *pLista, TNo *x);
 int removerPrimeiro (TLista *pLista);
+void eAVL(TNo* pR);
+void preOrdem(TNo *p);
 
 //Função Arvore:
 TNo* criarNo(TItem x);
+
+//Função Arvore AVL:
+int altura (TNo* pRaiz);
+int fb (TNo* pRaiz);
+TNo* rotacaoSimplesDireita(TNo* pR);
+TNo* rotacaoSimplesEsquerda (TNo* pR);
+TNo* balancaEsquerda(TNo* pR);
+TNo* balancaDireita(TNo* pR);
+TNo* balanceamento(TNo* pR);
 
 //Funçoes Huffman:
 TNo* MontaArvoreHuffman(TLista *pLista);
@@ -37,7 +48,7 @@ void ReorganizaLista(TLista *pLista, TNo *novo);
 void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits);
 void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia);
 int BuscaCaracter(TNo *pNo, char caracter, TNo *pX);
-void InserirArvoreBalanceada(TNo *raiz, TNo *novo);
+TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo);
 TNo* MontaArvoreCaracter(FILE *arquivo);
 
 //----------------------------------//
@@ -199,6 +210,102 @@ void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia){
 	
 }
 
+// ----------- Funcoes AVL -------------- //
+
+int altura (TNo* pRaiz) { 
+	int iEsq, iDir; 
+	if (pRaiz == NULL) 
+		return -1; 
+		
+	iEsq = altura (pRaiz->pEsq);
+	iDir = altura (pRaiz->pDir); 
+	
+	if (iEsq > iDir) 
+		return iEsq + 1; 
+	else 
+		return iDir + 1; 
+}
+
+int fb (TNo* pRaiz) {
+	if (pRaiz == NULL)
+		return 0;
+		
+	return altura (pRaiz->pEsq) - altura (pRaiz->pDir);
+}
+
+TNo* rotacaoSimplesDireita(TNo* pR) {
+	TNo*pAux = pR->pEsq;
+	pR->pEsq = pAux->pDir;
+	pAux->pDir = pR;
+	return pAux;
+}
+
+TNo* rotacaoSimplesEsquerda (TNo* pR) {
+	TNo *pAux = pR->pDir;
+	pR->pDir = pAux->pEsq;
+	pAux->pEsq = pR;
+	return pAux;
+}
+
+TNo* balancaEsquerda(TNo* pR) {
+	int gb;
+	gb = fb(pR->pEsq);
+	if(gb >= 0) {
+		pR= rotacaoSimplesDireita(pR);
+	} 
+	else{
+		pR->pEsq = rotacaoSimplesEsquerda(pR->pEsq);
+		pR = rotacaoSimplesDireita(pR);
+	}
+	
+	return pR;
+}
+
+TNo* balancaDireita(TNo* pR) { 
+	int gb = fb(pR->pDir); 
+	if(gb <= 0) { 
+		pR = rotacaoSimplesEsquerda(pR); 
+	} 
+	else{ 
+		pR->pDir = rotacaoSimplesDireita(pR->pDir);
+		pR = rotacaoSimplesEsquerda(pR); 
+	} 
+	
+	return pR;
+}
+
+TNo* balanceamento(TNo* pR) {
+	int gb = fb(pR);
+	if (gb > 1)
+		pR = balancaEsquerda(pR);
+	else if (gb < -1)
+		pR = balancaDireita(pR);
+		
+	return pR;
+}
+
+void eAVL(TNo* pR){
+	int gb = fb(pR);
+	
+	if((gb < -1) || (gb > 1)){
+		printf("Arvore não AVL\n");
+	}
+	else{
+		printf("Arvore AVL\n");
+	}
+	
+}
+
+void preOrdem(TNo *p) {
+	if (p == NULL) 
+		return;
+	printf("%c\n", p->item.simbolo);
+	preOrdem(p->pEsq);
+	preOrdem(p->pDir);
+}
+
+// -------------------------------------- //
+
 int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 	if(pNo == NULL){
 		return 0;
@@ -214,11 +321,22 @@ int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 			BuscaCaracter(pNo->pDir, caracter, pX);
 		}
 	}
+	
+	return 2;
 }
 
-void InserirArvoreBalanceada(TNo *raiz, TNo *novo){
+TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo){
 	//Organizar a arvore em ordem alfabetica ou por frequencia?
 	//Acredito que por frequencia vai ser mais eficiente
+	
+	if(raiz == NULL)
+		raiz = criarNo(novo->item);
+	else if(novo->item.simbolo < raiz->item.simbolo)
+		raiz->pEsq = InserirArvoreBalanceada(raiz->pEsq, novo);
+	else
+		raiz->pDir = InserirArvoreBalanceada(raiz->pDir, novo);
+	return raiz;
+	
 }
 
 TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
@@ -243,6 +361,14 @@ TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
 			InserirArvoreBalanceada(raiz, novo);
 		}
 	}
+	
+	//balanceia a arvore
+	balanceamento(raiz);
+	//verifica se o balanceamento deu certo
+	eAVL(raiz);
+	//percorre a arvore para teste
+	preOrdem(raiz);
+	
 	return raiz;
 }
 
