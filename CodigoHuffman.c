@@ -54,6 +54,9 @@ void ReorganizaLista(TLista *pLista, TNo *novo);
 void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits);
 void TaxaCompressao(float somaOcorrencia, long unsigned int totalOcorrencia);
 
+//Funções para Liberação de Memória
+void LiberaLista(TLista *pLista);
+TNo* LiberaArvore(TNo *pNo);
 
 
 /* ----------- Funções para Manipulação da Lista -------------- */
@@ -224,6 +227,8 @@ void preOrdem(TNo *p) {
 	preOrdem(p->pDir);
 }
 
+
+
 /* ----------- Funções de Leitura e Contabilização de todos Caracteres do Arquivo ----------- */
 
 TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres){ //Montar arvore Binaria dos Caracteres
@@ -352,7 +357,7 @@ void PercorreArvore(TNo *p, char *binario, int nivel, long int totalCaracteres, 
 	int bitsHuffman = ocorrencia * nivel;
 
 	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
-		printf("\t|%10c|%6.3f|%16.0f|%12s|%14d|\n", simbolo, frequencia, ocorrencia, binario, bitsHuffman);
+		printf("\t|%10c|%10.2f|%16.0f|%12s|%14d|\n", simbolo, frequencia*100, ocorrencia, binario, bitsHuffman);
 		*totalHuffman += bitsHuffman;
 	}
 	binario[nivel] = '0';
@@ -371,16 +376,16 @@ void ImprimirTabela(TNo *Raiz, long int totalCaracteres, int tamanhoBits){
 	
 	binario[0] = '0';
 	
-	printf("\n\n --------------------------- TABELA DE SIMBOLOS --------------------------- \n\n");
-	printf("\t+----------+------+----------------+------------+--------------+\n");
-	printf("\t| Caracter |  %%   | Nº Caracteres  |  Binario   | Bits Huffman |\n");
-	printf("\t+----------+------+----------------+------------+--------------+\n");
+	printf("\n\n ------------------------------ TABELA DE SIMBOLOS ------------------------------\n\n");
+	printf("\t+----------+----------+----------------+------------+--------------+\n");
+	printf("\t| Caracter |      %%   | Nº Caracteres  |  Binario   | Bits Huffman |\n");
+	printf("\t+----------+----------+----------------+------------+--------------+\n");
 	
 	PercorreArvore(Raiz, binario, nivel, totalCaracteres, &totalHuffman);
 	
-	printf("\t+----------+------+----------------+------------+--------------+\n");
-	printf("\t|  TOTAL   |%6d|%16ld|            |%14.0f|\n", frequencia , totalCaracteres, totalHuffman);
-	printf("\t+----------+------+----------------+------------+--------------+\n");	
+	printf("\t+----------+----------+----------------+------------+--------------+\n");
+	printf("\t|  TOTAL   |%10d|%16ld|            |%14.0f|\n", frequencia , totalCaracteres, totalHuffman);
+	printf("\t+----------+----------+----------------+------------+--------------+\n");	
 	
 	TaxaCompressao(totalHuffman, totalCaracteres * tamanhoBits);
 }
@@ -393,11 +398,48 @@ void TaxaCompressao(float somaOcorrencia, long unsigned int totalOcorrencia){
 	
 	taxa = (1-(somaOcorrencia/totalOcorrencia))*100;
 	
-	printf("\nTaxa de Compressao Aproximada: %f%%\n", taxa);
+	printf("\n\tTaxa de Compressao Aproximada: %f%%\n", taxa);
 	
 }
 
-// -------------------------------------- //
+
+
+/* ----------- Funções para Liberação de Memória ----------- */
+
+void LiberaLista(TLista *pLista){
+	TCelula *aux, *apaga;
+	
+	apaga = pLista->pPrimeiro;
+	aux = apaga->pProx;
+	
+	while(aux != NULL){
+		free(apaga);
+		apaga = aux;
+		aux = aux->pProx;
+	}
+	pLista->pPrimeiro = NULL;
+	pLista->pUltimo = NULL;
+}
+
+TNo* LiberaArvore(TNo *pNo){
+	if(pNo == NULL){
+		return NULL;
+	} else {
+		LiberaArvore(pNo->pEsq);
+		free(pNo->pEsq);
+		pNo->pEsq = NULL;
+		
+		
+		LiberaArvore(pNo->pDir);
+		free(pNo->pDir);
+		pNo->pDir = NULL;
+	}
+	return pNo;
+}
+
+
+
+/* ----------- MAIN ----------- */
 
 int main(int argc, char **argv)
 {	
@@ -411,7 +453,7 @@ int main(int argc, char **argv)
 	iniciarLista(&lista);	//iniciando a lista
 	raizCaracter = NULL;	//iniciando a arvore
 	
-	printf("--------------------------- CODIFICACAO DE HUFFMAN ---------------------------\n\n");
+	printf("------------------------------ CODIFICACAO DE HUFFMAN ------------------------------\n\n");
 	printf("Insira a quantidade de espaço para armazenar em Bits: ");
 	scanf("%d", &tamanhoBits);
 	arquivo = fopen("dados.txt", "r");
@@ -428,6 +470,23 @@ int main(int argc, char **argv)
 	raizHuffman = MontaArvoreHuffman(&lista); 						//Montando a Árvore de Huffman
 	
 	ImprimirTabela(raizHuffman, totalCaracteres, tamanhoBits); 		//Imprimindo os Resultados na Tabela
+
+	//printf("Lista : %c %f \n", lista.pPrimeiro->NoCelula->item.simbolo, lista.pPrimeiro->NoCelula->item.frequencia);
+	//printf("Lista : %c %f \n", raizCaracter->item.simbolo, raizCaracter->item.frequencia);
+
+	LiberaLista(&lista);
+	raizCaracter = LiberaArvore(raizCaracter);
+	raizHuffman = LiberaArvore(raizHuffman);
+	
+	free(raizCaracter);
+	free(raizHuffman);
+	
+	raizCaracter = NULL;
+	raizHuffman = NULL;
+	
+	if(lista.pPrimeiro == NULL) printf("TA VAZIO Lista\n");
+	if(raizCaracter == NULL) printf("TA VAZIO Caracter\n");
+	if(raizHuffman == NULL) printf("TA VAZIO Huffman\n");
 
 	return 1;
 }
