@@ -22,15 +22,13 @@ typedef struct {
 	TCelula *pPrimeiro, *pUltimo;
 } TLista;
 
-//Funçoes Lista:
+//Funções para Manipulação da Lista:
 void iniciarLista (TLista *pLista);
 int isVazia (TLista *pLista);
 int inserirOrdenado (TLista *pLista, TNo *x);
 int removerPrimeiro (TLista *pLista);
-void eAVL(TNo* pR);
-void preOrdem(TNo *p);
 
-//Função Arvore AVL:
+//Função para Manipulação da Arvore AVL:
 TNo* criarNo(TItem x);
 int altura (TNo* pRaiz);
 int fb (TNo* pRaiz);
@@ -39,18 +37,26 @@ TNo* rotacaoSimplesEsquerda (TNo* pR);
 TNo* balancaEsquerda(TNo* pR);
 TNo* balancaDireita(TNo* pR);
 TNo* balanceamento(TNo* pR);
+void eAVL(TNo* pR);
+void preOrdem(TNo *p);
 
-//Funçoes Huffman:
+//Funções de Leitura e Contabilização de todos Caracteres do Arquivo:
+TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres);
+int BuscaCaracter(TNo *pNo, char caracter, TNo *pX);
+TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo);
+
+//Função para Inserir todos os nós de caracteres na lista:
+int MontaLista(TLista *pLista, TNo *pNo,long unsigned int totalCaracteres);
+
+//Funçoes Para Criação e Manipulação da Árvore de Huffman:
 TNo* MontaArvoreHuffman(TLista *pLista);
 void ReorganizaLista(TLista *pLista, TNo *novo);
 void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits);
 void TaxaCompressao(float somaOcorrencia, long unsigned int totalOcorrencia);
-int BuscaCaracter(TNo *pNo, char caracter, TNo *pX);
-TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo);
-TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres);
-int MontaLista(TLista *pLista, TNo *pNo,long unsigned int totalCaracteres);
 
-// ----------- Funcoes Lista -------------- //
+
+
+/* ----------- Funções para Manipulação da Lista -------------- */
 
 void iniciarLista (TLista *pLista) {
 	pLista->pPrimeiro = NULL;
@@ -114,32 +120,9 @@ int removerPrimeiro (TLista *pLista) {
 	return 1;
 }
 
-// -------------------------------------- //
-	//TEM QUE APAGAR
-void imprimir (TLista *pLista, int inverso) {
-	TCelula *celula;
-	printf("Itens da lista: ");
-	
-	if(inverso){
-		celula = pLista->pUltimo;
-	}else{
-		celula = pLista->pPrimeiro;
-	}
-	
-	while (celula != NULL) {
-		printf ("(%c, %.0f)", celula->NoCelula->item.simbolo, celula->NoCelula->item.frequencia);
-		if(inverso){
-		celula = celula->pAnt;
-		}else{
-			celula = celula->pProx;
-		}
-	}
-	printf("\n\n");
-}
 
 
-
-// ----------- Funcoes AVL -------------- //
+/* ----------- Função para Manipulação da Arvore AVL -------------- */
 
 TNo* criarNo(TItem x) {
 	TNo* pAux = (TNo*) malloc(sizeof(TNo));
@@ -241,9 +224,95 @@ void preOrdem(TNo *p) {
 	preOrdem(p->pDir);
 }
 
-// -------------------------------------- //
+/* ----------- Funções de Leitura e Contabilização de todos Caracteres do Arquivo ----------- */
 
-// ----------- Funcoes Huffman -------------- //
+TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres){ //Montar arvore Binaria dos Caracteres
+	TNo *novo, *raiz, pX;
+	TItem item;
+	char caracter;
+	
+	caracter = fgetc(arquivo);
+	item.simbolo = caracter;
+	item.frequencia = 1;
+	raiz = criarNo(item);
+
+	while((caracter = fgetc(arquivo)) != EOF){
+		if(caracter != '\n'){
+			if(BuscaCaracter(raiz, caracter, &pX)){
+				
+				pX.item.frequencia++;
+			} else {
+				item.simbolo = caracter;
+				item.frequencia = 1;
+				novo = criarNo(item);
+				
+				InserirArvoreBalanceada(raiz, novo);
+				raiz = balanceamento(raiz); //balanceia a arvore
+			}
+		}
+		*totalCaracteres += 1;
+	}
+	
+	//eAVL(raiz); //verifica se o balanceamento deu certo
+	
+	return raiz;
+}
+
+int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
+	if(pNo == NULL){
+		return 0;
+	} else if(pNo->item.simbolo == caracter) {
+		pNo->item.frequencia++;
+		return 1;
+	} else {
+		if(caracter < pNo->item.simbolo) {
+			return BuscaCaracter(pNo->pEsq, caracter, pX);
+		}
+		
+		if(caracter > pNo->item.simbolo) {
+			return BuscaCaracter(pNo->pDir, caracter, pX);
+		}
+	}
+	return 0;
+}
+
+TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo){
+	//Organizar a arvore em ordem alfabetica ou por frequencia?
+	//Acredito que por frequencia vai ser mais eficiente
+	//printf("Entrou\n");
+	
+	if(raiz == NULL)
+		raiz = novo;
+	else if(novo->item.simbolo < raiz->item.simbolo)
+		raiz->pEsq = InserirArvoreBalanceada(raiz->pEsq, novo);
+	else
+		raiz->pDir = InserirArvoreBalanceada(raiz->pDir, novo);
+	return raiz;
+	
+}
+
+
+/* ----------- Função para Inserir todos os nós de caracteres na lista ----------- */
+
+int MontaLista(TLista *pLista, TNo *pNo, long unsigned int totalCaracteres){ //Percorre Arvore de Caracter e inserer os nós na lista de Nó
+	if(pNo == NULL){
+		return 0;
+	} else {
+		pNo->item.frequencia = (pNo->item.frequencia / totalCaracteres);
+		
+		inserirOrdenado(pLista, pNo);
+		
+		MontaLista(pLista, pNo->pEsq, totalCaracteres);
+		pNo->pEsq = NULL;
+		
+		MontaLista(pLista, pNo->pDir, totalCaracteres);
+		pNo->pDir = NULL;
+	}
+	return 1;
+}
+
+
+/* ----------- Funçoes Para Criação e Manipulação da Árvore de Huffman ----------- */
 
 void ReorganizaLista(TLista *pLista, TNo *novo){
 	removerPrimeiro(pLista);
@@ -324,160 +393,41 @@ void TaxaCompressao(float somaOcorrencia, long unsigned int totalOcorrencia){
 	
 	taxa = (1-(somaOcorrencia/totalOcorrencia))*100;
 	
-	printf("\nTaxa de Compressao Aproximada: %f%%", taxa);
+	printf("\nTaxa de Compressao Aproximada: %f%%\n", taxa);
 	
-}
-
-int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
-	if(pNo == NULL){
-		return 0;
-	} else if(pNo->item.simbolo == caracter) {
-		pNo->item.frequencia++;
-		return 1;
-	} else {
-		if(caracter < pNo->item.simbolo) {
-			return BuscaCaracter(pNo->pEsq, caracter, pX);
-		}
-		
-		if(caracter > pNo->item.simbolo) {
-			return BuscaCaracter(pNo->pDir, caracter, pX);
-		}
-	}
-	return 0;
-}
-
-TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo){
-	//Organizar a arvore em ordem alfabetica ou por frequencia?
-	//Acredito que por frequencia vai ser mais eficiente
-	//printf("Entrou\n");
-	
-	if(raiz == NULL)
-		raiz = novo;
-	else if(novo->item.simbolo < raiz->item.simbolo)
-		raiz->pEsq = InserirArvoreBalanceada(raiz->pEsq, novo);
-	else
-		raiz->pDir = InserirArvoreBalanceada(raiz->pDir, novo);
-	return raiz;
-	
-}
-
-TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres){ //Montar arvore Binaria dos Caracteres
-	TNo *novo, *raiz, pX;
-	TItem item;
-	char caracter;
-	
-	caracter = fgetc(arquivo);
-	item.simbolo = caracter;
-	item.frequencia = 1;
-	raiz = criarNo(item);
-
-	while((caracter = fgetc(arquivo)) != EOF){
-		if(caracter != '\n'){
-			if(BuscaCaracter(raiz, caracter, &pX)){
-				
-				pX.item.frequencia++;
-			} else {
-				item.simbolo = caracter;
-				item.frequencia = 1;
-				novo = criarNo(item);
-				
-				InserirArvoreBalanceada(raiz, novo);
-				raiz = balanceamento(raiz); //balanceia a arvore
-			}
-		}
-		*totalCaracteres += 1;
-	}
-	
-	//eAVL(raiz); //verifica se o balanceamento deu certo
-	
-	return raiz;
-}
-
-int MontaLista(TLista *pLista, TNo *pNo, long unsigned int totalCaracteres){ //Percorre Arvore de Caracter e inserer os nona lista de Nó
-	if(pNo == NULL){
-		return 0;
-	} else {
-		pNo->item.frequencia = (pNo->item.frequencia / totalCaracteres);
-		
-		inserirOrdenado(pLista, pNo);
-		
-		MontaLista(pLista, pNo->pEsq, totalCaracteres);
-		pNo->pEsq = NULL;
-		
-		MontaLista(pLista, pNo->pDir, totalCaracteres);
-		pNo->pDir = NULL;
-	}
-	return 1;
 }
 
 // -------------------------------------- //
 
 int main(int argc, char **argv)
 {	
-	//Criando a referencia da lista, e da arvore
-	TLista lista;
-	TNo *raizHuffman;
-	TNo *raizCaracter;
+	FILE *arquivo;		//Criando a referencia do Arquivo
+	TLista lista;		//Criando a referencia da lista
+	TNo *raizHuffman;	//Criando a referencia da arvore de Huffman
+	TNo *raizCaracter;	//Criando a referencia da arvore de Caracteres
 	int tamanhoBits;
 	long unsigned int totalCaracteres = 0;
-
-	FILE *arquivo;
 	
-	//iniciando a lista
-	iniciarLista(&lista);
-	//iniciando a arvore
-	raizCaracter = NULL;
+	iniciarLista(&lista);	//iniciando a lista
+	raizCaracter = NULL;	//iniciando a arvore
 	
 	printf("--------------------------- CODIFICACAO DE HUFFMAN ---------------------------\n\n");
 	printf("Insira a quantidade de espaço para armazenar em Bits: ");
 	scanf("%d", &tamanhoBits);
 	arquivo = fopen("dados.txt", "r");
 	
-	if(arquivo == NULL)
+	if(arquivo == NULL){
 		printf("Erro ao abrir arquivo!\n");
-	else
-		raizCaracter = MontaArvoreCaracter(arquivo, &totalCaracteres);
-	
-	//printf("Printando:\n");
-	//preOrdem(raizCaracter);
-	
-	printf("Total de Caracter: %ld", totalCaracteres);
-	
-	MontaLista(&lista, raizCaracter, totalCaracteres);
-	raizHuffman = MontaArvoreHuffman(&lista);
-	ImprimirTabela(raizHuffman, totalCaracteres, tamanhoBits);
-	
-	
-	/*
-	printf("Insira a quantidade de simbolos: ");
-	scanf("%d", &quantidade);
-	printf("Insira os Simbolos e sua respectiva Ocorrencia:\n");
-	for(i=0;i<quantidade;i++){
-		scanf("\n%c", &item.simbolo);
-		scanf("%f", &item.frequencia);
-		//Lê um item, chama a função CriaNo, a mesma cria o Nó e manda para a função inserirOrdenado
-		inserirOrdenado(&lista, criarNo(item));
+		return 0;
 	}
-
-	printf("Insira a quantidade total de Ocorrencias: ");
-	scanf(" %ld", &totalOcorrencia);
 	
-	raiz = MontaArvore(&lista);
-	ImprimirTabela(raiz, totalOcorrencia, tamanhoBits);
-	*/
+	raizCaracter = MontaArvoreCaracter(arquivo, &totalCaracteres);	//Montando a Arvore com todos Caracteres do arquivo
+	
+	MontaLista(&lista, raizCaracter, totalCaracteres); 				//Montando a Lista de nós ordenado para criação da Árvore de Huffman
+	
+	raizHuffman = MontaArvoreHuffman(&lista); 						//Montando a Árvore de Huffman
+	
+	ImprimirTabela(raizHuffman, totalCaracteres, tamanhoBits); 		//Imprimindo os Resultados na Tabela
 
-	return 0;
+	return 1;
 }
-
-/*
-TESTE:
-a 48 c 9 ? 10 g 12 k 4 p 17 -> k 4, c 9, ? 10, g 12, p 17, a 48 
-
-TESTE 2 (SLIDE):
-INPUT: A 2 B 5 C 1 E 2 P 1 0 18 1 13 2 7 3 12 4 9 5 6 6 11 7 7 8 2 9 4
-ORDENADO: (C,1) (P,1) (A,2) (E,2) (8,2) (9,4) (B,5) (5,6) (2,7) (7,7) (4,9) (6,11) (3,12) (1,13) (0,18)
-CARACTER: 8 BITS
-TOTAL OCORRENCIA: 4500000000 (4.5Gb)
-TAXA DE COMPRESSAO: 55.63%
-
-*/
