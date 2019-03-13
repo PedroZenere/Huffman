@@ -48,7 +48,7 @@ void TaxaCompressao(float somaOcorrencia, long unsigned int totalOcorrencia);
 int BuscaCaracter(TNo *pNo, char caracter, TNo *pX);
 TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo);
 TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres);
-int MontaLista(TLista *pLista, TNo *pNo);
+int MontaLista(TLista *pLista, TNo *pNo,long unsigned int totalCaracteres);
 
 // ----------- Funcoes Lista -------------- //
 
@@ -279,11 +279,11 @@ void PercorreArvore(TNo *p, char *binario, int nivel, long int totalCaracteres, 
 	
 	char simbolo = p->item.simbolo;
 	float frequencia = p->item.frequencia;
-	float ocorrencia = (frequencia / 100.0) * totalCaracteres;
+	float ocorrencia = frequencia * totalCaracteres;
 	int bitsHuffman = ocorrencia * nivel;
 
 	if(p->item.simbolo != '\0'){ //Se o simbolo for diferente de 'VAZIO'
-		printf("\t|%10c|%6.1f|%16.0f|%12s|%14d|\n", simbolo, frequencia, ocorrencia, binario, bitsHuffman);
+		printf("\t|%10c|%6.3f|%16.0f|%12s|%14d|\n", simbolo, frequencia, ocorrencia, binario, bitsHuffman);
 		*totalHuffman += bitsHuffman;
 	}
 	binario[nivel] = '0';
@@ -304,7 +304,7 @@ void ImprimirTabela(TNo *Raiz, long int totalCaracteres, int tamanhoBits){
 	
 	printf("\n\n --------------------------- TABELA DE SIMBOLOS --------------------------- \n\n");
 	printf("\t+----------+------+----------------+------------+--------------+\n");
-	printf("\t| Caracter |  %%   | Nº Ocorrências |  Binario   | Bits Huffman |\n");
+	printf("\t| Caracter |  %%   | Nº Caracteres  |  Binario   | Bits Huffman |\n");
 	printf("\t+----------+------+----------------+------------+--------------+\n");
 	
 	PercorreArvore(Raiz, binario, nivel, totalCaracteres, &totalHuffman);
@@ -313,7 +313,7 @@ void ImprimirTabela(TNo *Raiz, long int totalCaracteres, int tamanhoBits){
 	printf("\t|  TOTAL   |%6d|%16ld|            |%14.0f|\n", frequencia , totalCaracteres, totalHuffman);
 	printf("\t+----------+------+----------------+------------+--------------+\n");	
 	
-	TaxaCompressao(totalHuffman, totalCaracteres);
+	TaxaCompressao(totalHuffman, totalCaracteres * tamanhoBits);
 }
 
 void TaxaCompressao(float somaOcorrencia, long unsigned int totalOcorrencia){
@@ -393,16 +393,18 @@ TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres){ //M
 	return raiz;
 }
 
-int MontaLista(TLista *pLista, TNo *pNo){ //Percorre Arvore de Caracter e inserer os nona lista de Nó
+int MontaLista(TLista *pLista, TNo *pNo, long unsigned int totalCaracteres){ //Percorre Arvore de Caracter e inserer os nona lista de Nó
 	if(pNo == NULL){
 		return 0;
 	} else {
+		pNo->item.frequencia = (pNo->item.frequencia / totalCaracteres);
+		
 		inserirOrdenado(pLista, pNo);
 		
-		MontaLista(pLista, pNo->pEsq);
+		MontaLista(pLista, pNo->pEsq, totalCaracteres);
 		pNo->pEsq = NULL;
 		
-		MontaLista(pLista, pNo->pDir);
+		MontaLista(pLista, pNo->pDir, totalCaracteres);
 		pNo->pDir = NULL;
 	}
 	return 1;
@@ -441,7 +443,7 @@ int main(int argc, char **argv)
 	
 	printf("Total de Caracter: %ld", totalCaracteres);
 	
-	MontaLista(&lista, raizCaracter);
+	MontaLista(&lista, raizCaracter, totalCaracteres);
 	raizHuffman = MontaArvoreHuffman(&lista);
 	ImprimirTabela(raizHuffman, totalCaracteres, tamanhoBits);
 	
