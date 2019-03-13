@@ -44,10 +44,10 @@ TNo* balanceamento(TNo* pR);
 TNo* MontaArvoreHuffman(TLista *pLista);
 void ReorganizaLista(TLista *pLista, TNo *novo);
 void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits);
-void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia);
+void TaxaCompressao(float somaOcorrencia, long unsigned int totalOcorrencia);
 int BuscaCaracter(TNo *pNo, char caracter, TNo *pX);
 TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo);
-TNo* MontaArvoreCaracter(FILE *arquivo, int *totalCaracteres);
+TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres);
 int MontaLista(TLista *pLista, TNo *pNo);
 
 // ----------- Funcoes Lista -------------- //
@@ -115,6 +115,28 @@ int removerPrimeiro (TLista *pLista) {
 }
 
 // -------------------------------------- //
+	//TEM QUE APAGAR
+void imprimir (TLista *pLista, int inverso) {
+	TCelula *celula;
+	printf("Itens da lista: ");
+	
+	if(inverso){
+		celula = pLista->pUltimo;
+	}else{
+		celula = pLista->pPrimeiro;
+	}
+	
+	while (celula != NULL) {
+		printf ("(%c, %.0f)", celula->NoCelula->item.simbolo, celula->NoCelula->item.frequencia);
+		if(inverso){
+		celula = celula->pAnt;
+		}else{
+			celula = celula->pProx;
+		}
+	}
+	printf("\n\n");
+}
+
 
 
 // ----------- Funcoes AVL -------------- //
@@ -272,7 +294,7 @@ void PercorreArvore(TNo *p, char *binario, int nivel, long int totalCaracteres, 
 	PercorreArvore(p->pDir, binario, nivel+1, totalCaracteres, totalHuffman);
 }
 
-void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits){
+void ImprimirTabela(TNo *Raiz, long int totalCaracteres, int tamanhoBits){
 	char binario[tamanhoBits];
 	int nivel = 0;
 	double totalHuffman = 0;
@@ -285,16 +307,16 @@ void ImprimirTabela(TNo *Raiz, long int totalOcorrencia, int tamanhoBits){
 	printf("\t| Caracter |  %%   | Nº Ocorrências |  Binario   | Bits Huffman |\n");
 	printf("\t+----------+------+----------------+------------+--------------+\n");
 	
-	PercorreArvore(Raiz, binario, nivel, (totalOcorrencia/tamanhoBits), &totalHuffman);
+	PercorreArvore(Raiz, binario, nivel, totalCaracteres, &totalHuffman);
 	
 	printf("\t+----------+------+----------------+------------+--------------+\n");
-	printf("\t|  TOTAL   |%6d|%16ld|            |%14.0f|\n", frequencia ,(totalOcorrencia/tamanhoBits), totalHuffman);
+	printf("\t|  TOTAL   |%6d|%16ld|            |%14.0f|\n", frequencia , totalCaracteres, totalHuffman);
 	printf("\t+----------+------+----------------+------------+--------------+\n");	
 	
-	TaxaCompressao(totalHuffman, totalOcorrencia);
+	TaxaCompressao(totalHuffman, totalCaracteres);
 }
 
-void TaxaCompressao(float somaOcorrencia, long int totalOcorrencia){
+void TaxaCompressao(float somaOcorrencia, long unsigned int totalOcorrencia){
 // somaOcorrencia: Recebe a soma total dos caracteres codificados
 // totalOcorrencia: Recebe o total de caracteres que o texto contem no total
 
@@ -339,7 +361,7 @@ TNo* InserirArvoreBalanceada(TNo *raiz, TNo *novo){
 	
 }
 
-TNo* MontaArvoreCaracter(FILE *arquivo, int *totalCaracteres){ //Montar arvore Binaria dos Caracteres
+TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres){ //Montar arvore Binaria dos Caracteres
 	TNo *novo, *raiz, pX;
 	TItem item;
 	char caracter;
@@ -363,10 +385,10 @@ TNo* MontaArvoreCaracter(FILE *arquivo, int *totalCaracteres){ //Montar arvore B
 				raiz = balanceamento(raiz); //balanceia a arvore
 			}
 		}
-		totalCaracteres++;
+		*totalCaracteres += 1;
 	}
 	
-	eAVL(raiz); //verifica se o balanceamento deu certo
+	//eAVL(raiz); //verifica se o balanceamento deu certo
 	
 	return raiz;
 }
@@ -376,10 +398,11 @@ int MontaLista(TLista *pLista, TNo *pNo){ //Percorre Arvore de Caracter e insere
 		return 0;
 	} else {
 		inserirOrdenado(pLista, pNo);
+		
 		MontaLista(pLista, pNo->pEsq);
 		pNo->pEsq = NULL;
 		
-		MontaLista(pLista, pNo->pEsq);
+		MontaLista(pLista, pNo->pDir);
 		pNo->pDir = NULL;
 	}
 	return 1;
@@ -393,7 +416,8 @@ int main(int argc, char **argv)
 	TLista lista;
 	TNo *raizHuffman;
 	TNo *raizCaracter;
-	int tamanhoBits, totalCaracteres;
+	int tamanhoBits;
+	long unsigned int totalCaracteres = 0;
 
 	FILE *arquivo;
 	
@@ -411,6 +435,11 @@ int main(int argc, char **argv)
 		printf("Erro ao abrir arquivo!\n");
 	else
 		raizCaracter = MontaArvoreCaracter(arquivo, &totalCaracteres);
+	
+	//printf("Printando:\n");
+	//preOrdem(raizCaracter);
+	
+	printf("Total de Caracter: %ld", totalCaracteres);
 	
 	MontaLista(&lista, raizCaracter);
 	raizHuffman = MontaArvoreHuffman(&lista);
@@ -434,9 +463,6 @@ int main(int argc, char **argv)
 	raiz = MontaArvore(&lista);
 	ImprimirTabela(raiz, totalOcorrencia, tamanhoBits);
 	*/
-	
-	//printf("Printando:\n");
-	//preOrdem(raizCaracter);
 
 	return 0;
 }
