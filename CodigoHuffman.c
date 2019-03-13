@@ -144,7 +144,7 @@ int fb (TNo* pRaiz) {
 	if (pRaiz == NULL)
 		return 0;
 		
-	return altura (pRaiz->pEsq) - altura (pRaiz->pDir);
+	return altura(pRaiz->pEsq)-altura(pRaiz->pDir);
 }
 
 TNo* rotacaoSimplesDireita(TNo* pR) {
@@ -311,7 +311,7 @@ int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
 	} else if(pNo->item.simbolo == caracter) {
 		//printf("pNo: %c\n", pNo->item.simbolo);
 		//printf("caracter: %c\n", caracter);
-		pX = pNo;
+		pNo->item.frequencia++;
 		return 1;
 	} else {
 		if(caracter < pNo->item.simbolo) {
@@ -352,31 +352,24 @@ TNo* MontaArvoreCaracter(FILE *arquivo){ //Montar arvore Binaria dos Caracteres
 	raiz = criarNo(item);
 
 	while((caracter = fgetc(arquivo)) != EOF){
-		if(BuscaCaracter(raiz, caracter, &pX)){
-			//printf("Caracter: %c\n", caracter);
-			pX.item.frequencia++;
-		} else {
-			item.simbolo = caracter;
-			item.frequencia = 1;
-			novo = criarNo(item);
-			//printf("Caracter: %c\n", caracter);
-			InserirArvoreBalanceada(raiz, novo);
-			/*
-			printf("NO: %c\n", raiz->item.simbolo);
-			if(raiz->pEsq != NULL)
-				printf("Filho Esq: %c\n", raiz->pEsq->item.simbolo);
-			if(raiz->pDir != NULL)
-				printf("Filho Dir: %c\n", raiz->pDir->item.simbolo);
-			*/
-			//preOrdem(raiz);
+		if(caracter != '\n'){
+			if(BuscaCaracter(raiz, caracter, &pX)){
+				//printf("Caracter: %c\n", caracter);
+				pX.item.frequencia++;
+			} else {
+				item.simbolo = caracter;
+				item.frequencia = 1;
+				novo = criarNo(item);
+				//printf("Caracter: %c\n", caracter);
+				InserirArvoreBalanceada(raiz, novo);
+				//balanceia a arvore
+				raiz = balanceamento(raiz);
+			}
 		}
 	}
 	
-	//balanceia a arvore
-	//balanceamento(raiz);
 	//verifica se o balanceamento deu certo
-	//eAVL(raiz);
-	//percorre a arvore para teste
+	eAVL(raiz);
 	
 	return raiz;
 }
@@ -428,6 +421,7 @@ int main(int argc, char **argv)
 	ImprimirTabela(raiz, totalOcorrencia, tamanhoBits);
 	*/
 	
+	printf("Printando:\n");
 	preOrdem(raizCaracter);
 
 	return 0;
