@@ -23,6 +23,7 @@ typedef struct {
 } TLista;
 
 //Funções para Manipulação da Lista:
+int imprimir (TLista *pLista, int inverso);
 void iniciarLista (TLista *pLista);
 int isVazia (TLista *pLista);
 int inserirOrdenado (TLista *pLista, TNo *x);
@@ -60,6 +61,32 @@ TNo* LiberaArvore(TNo *pNo);
 
 
 /* ----------- Funções para Manipulação da Lista -------------- */
+
+int imprimir (TLista *pLista, int inverso) {
+	TCelula *celula;
+	printf("Itens da lista: ");
+	if((isVazia(pLista))){
+		printf("Lista Vazia\n");
+		return 0;
+	}
+	
+	if(inverso){
+		celula = pLista->pUltimo;
+	}else{
+		celula = pLista->pPrimeiro;
+	}
+	
+	while (celula != NULL) {
+		printf ("%f ", celula->NoCelula->item.frequencia);
+		if(inverso){
+		celula = celula->pAnt;
+		}else{
+			celula = celula->pProx;
+		}
+	}
+	printf("\n\n");
+	return 0;
+}
 
 void iniciarLista (TLista *pLista) {
 	pLista->pPrimeiro = NULL;
@@ -103,6 +130,8 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 		}
 	}
 	
+	imprimir(pLista, 0);
+	
 	return 1;
 }
 
@@ -122,8 +151,6 @@ int removerPrimeiro (TLista *pLista) {
 	
 	return 1;
 }
-
-
 
 /* ----------- Função para Manipulação da Arvore AVL -------------- */
 
@@ -326,19 +353,22 @@ void ReorganizaLista(TLista *pLista, TNo *novo){
 }
 
 TNo* MontaArvoreHuffman(TLista *pLista){ //Retorna o nó raiz da arvore
+	TCelula *pPrimeiro, *pSegundo;
+	TItem item;
 	TNo *novo = NULL;
 	float somaFrequencia;
 	
 	while(pLista->pPrimeiro != pLista->pUltimo){ //Enquanto tiver mais de um elemento na lista
-		novo = (TNo*) malloc(sizeof(TNo));
-		TCelula *pPrimeiro, *pSegundo;
 		
 		pPrimeiro = pLista->pPrimeiro;
 		pSegundo = pPrimeiro->pProx;
 		
 		somaFrequencia = pPrimeiro->NoCelula->item.frequencia + pSegundo->NoCelula->item.frequencia;
 		
-		novo->item.frequencia = somaFrequencia;
+		item.simbolo = '\0';
+		item.frequencia = somaFrequencia;
+		
+		novo = criarNo(item);
 		novo->pEsq = pPrimeiro->NoCelula;
 		novo->pDir = pSegundo->NoCelula;
 		
@@ -478,15 +508,7 @@ int main(int argc, char **argv)
 	raizCaracter = LiberaArvore(raizCaracter);
 	raizHuffman = LiberaArvore(raizHuffman);
 	
-	free(raizCaracter);
-	free(raizHuffman);
-	
-	raizCaracter = NULL;
-	raizHuffman = NULL;
-	
-	if(lista.pPrimeiro == NULL) printf("TA VAZIO Lista\n");
-	if(raizCaracter == NULL) printf("TA VAZIO Caracter\n");
-	if(raizHuffman == NULL) printf("TA VAZIO Huffman\n");
+	fclose(arquivo);
 
 	return 1;
 }
