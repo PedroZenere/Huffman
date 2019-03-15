@@ -275,10 +275,7 @@ TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres){ //M
 
 	while((caracter = fgetc(arquivo)) != EOF){
 		if(caracter != '\n'){
-			if(BuscaCaracter(raiz, caracter, &pX)){
-				
-				pX.item.frequencia++;
-			} else {
+			if(!(BuscaCaracter(raiz, caracter, &pX))){
 				item.simbolo = caracter;
 				item.frequencia = 1;
 				novo = criarNo(item);
@@ -293,6 +290,7 @@ TNo* MontaArvoreCaracter(FILE *arquivo, long unsigned int *totalCaracteres){ //M
 	//eAVL(raiz); //verifica se o balanceamento deu certo
 	
 	return raiz;
+
 }
 
 int BuscaCaracter(TNo *pNo, char caracter, TNo *pX){
@@ -460,11 +458,9 @@ TNo* LiberaArvore(TNo *pNo){
 	if(pNo == NULL){
 		return NULL;
 	} else {
-		printf("Caracter: %c Frequencia: %f\n", pNo->item.simbolo, pNo->item.frequencia);
 		LiberaArvore(pNo->pEsq);
 		free(pNo->pEsq);
 		pNo->pEsq = NULL;
-		
 		
 		LiberaArvore(pNo->pDir);
 		free(pNo->pDir);
@@ -507,17 +503,12 @@ int main(int argc, char **argv)
 	
 	ImprimirTabela(raizHuffman, totalCaracteres, tamanhoBits); 		//Imprimindo os Resultados na Tabela
 
-	//printf("Lista : %c %f \n", lista.pPrimeiro->NoCelula->item.simbolo, lista.pPrimeiro->NoCelula->item.frequencia);
-	//printf("Lista : %c %f \n", raizCaracter->item.simbolo, raizCaracter->item.frequencia);
-
 	LiberaLista(&lista);
-	raizCaracter = LiberaArvore(raizCaracter);
 	raizHuffman = LiberaArvore(raizHuffman);
 
-	//free(raizCaracter);
 	free(raizHuffman);
 	
 	fclose(arquivo);
 
-	return 1;
+	return 0;
 }
