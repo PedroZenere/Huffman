@@ -99,6 +99,8 @@ int isVazia (TLista *pLista) {
 
 int inserirOrdenado (TLista *pLista, TNo *x) {
 	TCelula *novo = (TCelula *) malloc (sizeof (TCelula));
+	TCelula *pAux = NULL;
+	
 	novo->NoCelula = x;
 	novo->pProx = NULL;
 	novo->pAnt = NULL;
@@ -107,17 +109,20 @@ int inserirOrdenado (TLista *pLista, TNo *x) {
 		pLista->pPrimeiro = novo;
 		pLista->pUltimo = novo;
 	} else if(novo->NoCelula->item.frequencia <= pLista->pPrimeiro->NoCelula->item.frequencia){
-		TCelula *pAux;
 		pAux = pLista->pPrimeiro;
 		pLista->pPrimeiro = novo;
 		pLista->pPrimeiro->pProx = pAux;
 		pAux->pAnt = pLista->pPrimeiro;
 		pLista->pPrimeiro->pAnt = NULL;
 	} else if(novo->NoCelula->item.frequencia > pLista->pPrimeiro->NoCelula->item.frequencia) {
-		TCelula *pAux = pLista->pPrimeiro;
+		
+		pAux = pLista->pPrimeiro;
+		
 		while (pAux != NULL && pAux->NoCelula->item.frequencia < novo->NoCelula->item.frequencia) {
 			pAux = pAux->pProx;
-		} if(pAux == NULL) {
+		} 
+		
+		if(pAux == NULL) {
 			pLista->pUltimo->pProx = novo;
 			novo->pAnt = pLista->pUltimo;
 			pLista->pUltimo = novo;
@@ -139,15 +144,15 @@ int removerPrimeiro (TLista *pLista) {
 	if (isVazia (pLista)) {
 		return 0;
 	}
-	TCelula *pAux;
+	TCelula *pAux = NULL;
 	pAux = pLista->pPrimeiro;
 	if(pAux->pProx == NULL){
 		pLista->pPrimeiro = NULL;
 	}else {
 		pLista->pPrimeiro = pAux->pProx;
 		pLista->pPrimeiro->pAnt = NULL;
-		free (pAux);
 	}
+	free(pAux);
 	
 	return 1;
 }
@@ -455,6 +460,7 @@ TNo* LiberaArvore(TNo *pNo){
 	if(pNo == NULL){
 		return NULL;
 	} else {
+		printf("Caracter: %c Frequencia: %f\n", pNo->item.simbolo, pNo->item.frequencia);
 		LiberaArvore(pNo->pEsq);
 		free(pNo->pEsq);
 		pNo->pEsq = NULL;
@@ -507,6 +513,9 @@ int main(int argc, char **argv)
 	LiberaLista(&lista);
 	raizCaracter = LiberaArvore(raizCaracter);
 	raizHuffman = LiberaArvore(raizHuffman);
+
+	//free(raizCaracter);
+	free(raizHuffman);
 	
 	fclose(arquivo);
 
