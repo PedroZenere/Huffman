@@ -4,4 +4,10 @@
 
 - Faça o clone do repositório
 
-- Execute no arquivo
+- Execute arquivo CodigoHuffman.c
+
+- Para executar no terminal digite:
+
+      gcc CodigoHuffman.c
+  
+      ./a.out
