@@ -9,5 +9,4 @@
 - Para executar no terminal digite:
 
       gcc CodigoHuffman.c
-  
-      ./a.out
+ 
